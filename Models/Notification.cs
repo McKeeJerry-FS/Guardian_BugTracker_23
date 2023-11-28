@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Guardian_BugTracker_23.Data.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Guardian_BugTracker_23.Models
 {
@@ -19,11 +20,12 @@ namespace Guardian_BugTracker_23.Models
         public string? SenderId { get; set; }
         [Required]
         public string? RecipientId { get; set;}
-        public int NotificationTypeId { get; set; }
+        //public int NotificationTypeId { get; set; }
         public bool HasBeenViewed { get; set; }
+        public BTNotificationType NotificationType { get; set; }
 
         // Navigation
-        public virtual NotificationType? NotificationType { get; set; }
+        //public virtual NotificationType? NotificationType { get; set; }
         public virtual Project? Project { get; set; }
         public virtual Ticket? Ticket { get; set; }
         public virtual BTUser? Sender { get; set; }

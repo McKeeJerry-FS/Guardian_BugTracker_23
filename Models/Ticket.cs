@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Guardian_BugTracker_23.Data.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Guardian_BugTracker_23.Models
 {
@@ -17,20 +18,26 @@ namespace Guardian_BugTracker_23.Models
         public bool Archived { get; set; }
         public bool ArchivedByProject { get; set; }
 
+        public BTTicketTypes TicketType { get; set; }
+        public BTTicketStatuses TicketStatus { get; set; }
+        public BTTicketPriorities TicketPriority { get; set; }
+
         // Foreign Key Props
         public int ProjectId { get; set; }
-        public int TicketTypeId { get; set; }
-        public int TicketStatusId { get; set; }
-        public int TicketPriorityId { get; set; }
+        //public int TicketTypeId { get; set; }
+        //public int TicketStatusId { get; set; }
+        //public int TicketPriorityId { get; set; }
         public string? DeveloperUserId { get; set; }
         [Required]
         public string? SubmitterUserId { get; set; }
 
         // Navigation Props
         public virtual Project? Project { get; set; }
-        public virtual TicketPriorirty? TicketPriorirty { get; set; }
-        public virtual TicketType? TicketType { get; set; } 
-        public virtual TicketStatus? TicketStatus { get; set; }
+        //public virtual TicketPriority? TicketPriority { get; set; }
+        /// <summary>
+        //public virtual TicketType? TicketType { get; set; } 
+        /// </summary>
+        //public virtual TicketStatus? TicketStatus { get; set; }
         public virtual BTUser? DeveloperUser { get; set; }
         public virtual BTUser? SubmitterUser { get; set; }
 
