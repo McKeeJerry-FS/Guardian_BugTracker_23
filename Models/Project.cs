@@ -29,21 +29,21 @@ namespace Guardian_BugTracker_23.Models
         }
         [DataType(DataType.Date)]
         [Display(Name = "Date Started")]
-        public DateTimeOffset? StartDate { 
+        public DateTimeOffset StartDate { 
             get => _startDate;
             set 
             {
-                _startDate = value.Value.ToUniversalTime();
+                _startDate = value.ToUniversalTime();
             } 
         }
         [DataType(DataType.Date)]
         [Display(Name = "Date Ended")]
-        public DateTimeOffset? EndDate
+        public DateTimeOffset EndDate
         {
             get => _endDate;
             set 
             {
-                _endDate = value.Value.ToUniversalTime();            
+                _endDate = value.ToUniversalTime();            
             }
         
         }

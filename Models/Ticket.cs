@@ -31,7 +31,7 @@ namespace Guardian_BugTracker_23.Models
         { get => _updated;
             set 
             {
-                _updated = value.Value.ToUniversalTime();
+                _updated = value.HasValue ? value.Value.ToUniversalTime() : null;
             } 
         }
         public bool Archived { get; set; }
