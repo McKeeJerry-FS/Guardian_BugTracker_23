@@ -1,4 +1,5 @@
 using Guardian_BugTracker_23.Data;
+using Guardian_BugTracker_23.Extensions;
 using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services;
 using Guardian_BugTracker_23.Services.Interfaces;
@@ -18,7 +19,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddDefaultUI()
     .AddDefaultTokenProviders()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddClaimsPrincipalFactory<BTUserClaimsPrincipalFactory>();
+
 builder.Services.AddControllersWithViews();
 
 // Adding Custom Services

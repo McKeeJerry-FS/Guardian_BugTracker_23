@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Guardian_BugTracker_23.Data;
 using Guardian_BugTracker_23.Models;
+using Guardian_BugTracker_23.Extensions;
 
 namespace Guardian_BugTracker_23.Controllers
 {
@@ -33,6 +34,9 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 return NotFound();
             }
+
+            // New Identity Extention in USE
+            int companyId = User.Identity!.GetCompanyId();
 
             var ticket = await _context.Tickets
                 .Include(t => t.DeveloperUser)
