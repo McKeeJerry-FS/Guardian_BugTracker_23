@@ -24,6 +24,8 @@ namespace Guardian_BugTracker_23.Data
         public DbSet<TicketPriority> TicketPriorities { get; set; }
         public DbSet<ProjectPriority> ProjectPriorities { get; set; }
         public DbSet<NotificationType> NotificationTypes { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+
  
     }
 }

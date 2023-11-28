@@ -5,6 +5,9 @@ namespace Guardian_BugTracker_23.Models
 {
     public class Ticket
     {
+        private DateTimeOffset _created;
+        private DateTimeOffset? _updated;
+
         public int Id { get; set; }
         [Required]
         [Display(Name = "Ticket Title")]
@@ -12,9 +15,25 @@ namespace Guardian_BugTracker_23.Models
         public string? Title { get; set; }
         [Required]
         public string? Description { get; set; }
-        // Format for PostgreSQL
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset? Updated { get; set; }
+        
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Created")]
+        public DateTimeOffset Created 
+        { get => _created;
+          set 
+            {
+                _created = value.ToUniversalTime();
+            } 
+        }
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Updated")]
+        public DateTimeOffset? Updated 
+        { get => _updated;
+            set 
+            {
+                _updated = value.Value.ToUniversalTime();
+            } 
+        }
         public bool Archived { get; set; }
         public bool ArchivedByProject { get; set; }
 

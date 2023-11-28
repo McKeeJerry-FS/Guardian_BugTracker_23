@@ -74,7 +74,7 @@ namespace Guardian_BugTracker_23.Data
         }
 
 
-        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
             //Seed Roles
             await roleManager.CreateAsync(new IdentityRole(nameof(BTRoles.Admin)));
@@ -84,7 +84,7 @@ namespace Guardian_BugTracker_23.Data
             await roleManager.CreateAsync(new IdentityRole(nameof(BTRoles.DemoUser)));
         }
 
-        public static async Task SeedDefaultCompaniesAsync(ApplicationDbContext context)
+        private static async Task SeedDefaultCompaniesAsync(ApplicationDbContext context)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace Guardian_BugTracker_23.Data
 
         }
 
-        public static async Task SeedDefaultUsersAsync(UserManager<BTUser> userManager)
+        private static async Task SeedDefaultUsersAsync(UserManager<BTUser> userManager)
         {
             //Seed Default Admin User
             var defaultUser = new BTUser
@@ -470,7 +470,7 @@ namespace Guardian_BugTracker_23.Data
 
         }
 
-        public static async Task SeedDemoUsersAsync(UserManager<BTUser> userManager)
+        private static async Task SeedDemoUsersAsync(UserManager<BTUser> userManager)
         {
             //Seed Demo Admin User
             var defaultUser = new BTUser
@@ -624,7 +624,7 @@ namespace Guardian_BugTracker_23.Data
             }
         }
 
-        public static async Task SeedDefaultProjectPrioritiesAsync(ApplicationDbContext context)
+        private static async Task SeedDefaultProjectPrioritiesAsync(ApplicationDbContext context)
         {
             try
             {
@@ -650,7 +650,7 @@ namespace Guardian_BugTracker_23.Data
             }
         }
 
-        public static async Task SeedDefaultProjectsAsync(ApplicationDbContext context)
+        private static async Task SeedDefaultProjectsAsync(ApplicationDbContext context)
         {
 
             //Get project priority Ids
@@ -745,7 +745,7 @@ namespace Guardian_BugTracker_23.Data
         //    //Assign Portfolio Project Manager
         //}
 
-        public static async Task SeedDefaultTicketTypesAsync(ApplicationDbContext context)
+        private static async Task SeedDefaultTicketTypesAsync(ApplicationDbContext context)
         {
             try
             {
@@ -777,7 +777,7 @@ namespace Guardian_BugTracker_23.Data
             }
         }
 
-        public static async Task SeedDefaultTicketStatusesAsync(ApplicationDbContext context)
+        private static async Task SeedDefaultTicketStatusesAsync(ApplicationDbContext context)
         {
             try
             {
@@ -803,7 +803,7 @@ namespace Guardian_BugTracker_23.Data
             }
         }
 
-        public static async Task SeedDefaultTicketPrioritiesAsync(ApplicationDbContext context)
+        private static async Task SeedDefaultTicketPrioritiesAsync(ApplicationDbContext context)
         {
             try
             {
@@ -829,7 +829,7 @@ namespace Guardian_BugTracker_23.Data
             }
         }
 
-        public static async Task SeedDefaultTicketsAsync(ApplicationDbContext context, UserManager<BTUser> userManager)
+        private static async Task SeedDefaultTicketsAsync(ApplicationDbContext context, UserManager<BTUser> userManager)
         {
 
             //Get ticket type Ids
@@ -970,7 +970,7 @@ namespace Guardian_BugTracker_23.Data
             }
         }
 
-        public static async Task SeedDefaultNotificationTypesAsync(ApplicationDbContext context)
+        private static async Task SeedDefaultNotificationTypesAsync(ApplicationDbContext context)
         {
             try
             {

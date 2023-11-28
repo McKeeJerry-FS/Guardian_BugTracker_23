@@ -9,6 +9,7 @@ namespace Guardian_BugTracker_23.Models
         // Add attributes for stringLength, DisplayName
         [Required]
         [Display(Name = "Company Name")]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and max {1} characters long.", MinimumLength = 2)]
         public string? Name { get; set; }
         public string? Description { get; set; }
 

@@ -6,6 +6,9 @@ namespace Guardian_BugTracker_23.Models
 {
     public class Project
     {
+        private DateTimeOffset _created;
+        private DateTimeOffset _startDate;
+        private DateTimeOffset _endDate;
         public int Id { get; set; }
         [Required]
         [Display(Name = "Project Name")]
@@ -14,10 +17,36 @@ namespace Guardian_BugTracker_23.Models
         public int CompanyId { get; set; }
         [Required]
         public string? Description { get; set; }
-        // Format for PostgreSQL
-        public DateTimeOffset Created { get; set; }
-        public DateTimeOffset StartDate { get; set;}
-        public DateTimeOffset EndDate { get; set;}
+        
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Created")]
+        public DateTimeOffset Created {
+            get => _created; 
+            set
+            {
+                _created = value.ToUniversalTime();
+            }
+        }
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Started")]
+        public DateTimeOffset? StartDate { 
+            get => _startDate;
+            set 
+            {
+                _startDate = value.Value.ToUniversalTime();
+            } 
+        }
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Ended")]
+        public DateTimeOffset? EndDate
+        {
+            get => _endDate;
+            set 
+            {
+                _endDate = value.Value.ToUniversalTime();            
+            }
+        
+        }
         public BTProjectPriorities ProjectPriority { get; set; }
 
         //public int ProjectPriorityId { get; set; }

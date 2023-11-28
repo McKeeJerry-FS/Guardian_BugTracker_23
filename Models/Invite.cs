@@ -5,10 +5,30 @@ namespace Guardian_BugTracker_23.Models
 {
     public class Invite
     {
+
+        private DateTimeOffset _inviteDate;
+        private DateTimeOffset _joinDate;
+
         public int Id { get; set; }
         // Format dates for PostgreSQL
-        public DateTimeOffset InviteDate { get; set; }
-        public DateTimeOffset? JoinDate { get; set; }
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Sent")]
+        public DateTimeOffset InviteDate 
+        { get => _inviteDate; 
+          set 
+            {
+                _inviteDate = value.ToUniversalTime();
+            } 
+        }
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Joined")]
+        public DateTimeOffset? JoinDate 
+        { get => _joinDate;
+          set 
+            {
+                _joinDate = value.Value.ToUniversalTime();
+            }
+        }
         public Guid CompanyToken { get; set; }
         public int CompanyId { get; set; }
         public int? ProjectId { get; set; }

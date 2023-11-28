@@ -5,6 +5,9 @@ namespace Guardian_BugTracker_23.Models
 {
     public class Notification
     {
+        private DateTimeOffset _created;
+
+
         public int Id { get; set; }
         public int? ProjectId { get; set; }
         public int? TicketId { get; set; }
@@ -14,8 +17,16 @@ namespace Guardian_BugTracker_23.Models
         public string? Title { get; set; }
         [Required]
         public string? Message { get; set; }
-        // Format Date for PostgreSQL
-        public DateTimeOffset Created { get; set; }
+        
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Created")]
+        public DateTimeOffset Created 
+        { get => _created;
+          set 
+            {
+                _created = value.ToUniversalTime();
+            } 
+        }
         [Required]
         public string? SenderId { get; set; }
         [Required]
