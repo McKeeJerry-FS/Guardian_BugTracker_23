@@ -13,10 +13,13 @@ namespace Guardian_BugTracker_23.Controllers
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<ProjectsController> _logger;
 
-        public ProjectsController(ApplicationDbContext context)
+        public ProjectsController(ApplicationDbContext context,
+                                  ILogger<ProjectsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Projects
@@ -48,8 +51,8 @@ namespace Guardian_BugTracker_23.Controllers
         // GET: Projects/Create
         public IActionResult Create()
         {
-            ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name");
 
+            ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name");
             ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
             return View();
         }
@@ -65,6 +68,7 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 _context.Add(project);
                 await _context.SaveChangesAsync();
+                _logger.LogInformation("Project was successfully created", DateTimeOffset.Now);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriority);
@@ -85,8 +89,8 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 return NotFound();
             }
-            ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriority);
 
+            ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriority);
             ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
             return View(project);
         }
@@ -108,12 +112,14 @@ namespace Guardian_BugTracker_23.Controllers
                 try
                 {
                     _context.Update(project);
+                    _logger.LogInformation("Project was successfully updated", DateTimeOffset.Now.ToUniversalTime());
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ProjectExists(project.Id))
                     {
+                        _logger.LogError("Project was not found", DateTimeOffset.Now.ToUniversalTime());
                         return NotFound();
                     }
                     else
