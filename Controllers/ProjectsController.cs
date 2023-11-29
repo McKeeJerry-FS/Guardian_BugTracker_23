@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Guardian_BugTracker_23.Data;
 using Guardian_BugTracker_23.Models;
+using Guardian_BugTracker_23.Services.Interfaces;
+using X.PagedList;
 
 namespace Guardian_BugTracker_23.Controllers
 {
@@ -14,19 +16,32 @@ namespace Guardian_BugTracker_23.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ProjectsController> _logger;
+        private readonly IBTProjectService _btProjectService;
 
         public ProjectsController(ApplicationDbContext context,
-                                  ILogger<ProjectsController> logger)
+                                  ILogger<ProjectsController> logger,
+                                  IBTProjectService bTProjectService
+                                  )
         {
             _context = context;
             _logger = logger;
+            _btProjectService = bTProjectService;
         }
 
         // GET: Projects
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNum)
         {
-            var applicationDbContext = _context.Projects.Include(p => p.Company);
-            return View(await applicationDbContext.ToListAsync());
+            //IPagedList<Project> projects;
+            //// new service included
+            //int pageSize = 4;
+            //int page = pageNum ?? 1;
+
+            //projects = await (await _btProjectService.GetAllProjectsASync()).ToPagedListAsync(page, pageSize);
+            //return View(projects);
+            List<Project> results;
+            results = await _btProjectService.GetAllProjectsASync();
+            return View(results.ToList());
+
         }
 
         // GET: Projects/Details/5

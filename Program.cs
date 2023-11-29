@@ -6,7 +6,7 @@ using Guardian_BugTracker_23.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +25,17 @@ builder.Services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.Req
 builder.Services.AddControllersWithViews();
 
 // Adding Custom Services
+builder.Services.AddScoped<IBTCompanyService, BTCompanyService>();
+builder.Services.AddScoped<IBTFileService, BTFileService>();
+builder.Services.AddScoped<IBTInviteService, BTInviteService>();
+builder.Services.AddScoped<IBTNotificationService, BTNotificationService>();
+builder.Services.AddScoped<IBTProjectService, BTProjectService>();
+builder.Services.AddScoped<IBTRolesService, BTRolesService>();
+builder.Services.AddScoped<IBTTicketHistoryService, BTTicketHistoryService>();
+builder.Services.AddScoped<IBTTicketService, BTTicketService>();
+// Possibly removing since builder.Services.AddScoped<IBTFileService, BTFileService>(); will handle images as well
 builder.Services.AddScoped<IImageService, ImageService>();
+
 // Email Service Here
 builder.Services.AddScoped<IEmailSender, EmailService>();
 
