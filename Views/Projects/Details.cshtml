@@ -1,4 +1,5 @@
 ﻿@model Guardian_BugTracker_23.Models.Project
+@inject IBTTicketService _btTicketService
 
 @{
     ViewData["Title"] = "Details";
@@ -143,8 +144,8 @@
                             </div>
                             <div class="table-responsive" style="overflow-y:auto;height:600px;">
                                 <table class="table table-hover">
-                                    <thead class="bg-secondary border border-2 border-dark">
-                                        <tr>
+                                    <thead class="border border-2 border-dark sticky-top">
+                                        <tr class="bg-dark text-light">
                                             @* Table header *@
                                             <th>Title</th>
                                             <th>Created</th>
@@ -156,20 +157,20 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
                                             @* Table body *@
                                             @*foreach statement for each ticket in tickets*@
-                                            @foreach (var ticket in Model.Tickets)
+                                            @foreach (var ticket in (await _btTicketService.GetAllTicketsByCompanyIdAsync(Model.CompanyId)))
                                             {
-                                                <td>@ticket.Title</td>
-                                                <td>@ticket.Created</td>
-                                                <td>@ticket.Updated</td>
-                                                <td>@ticket.Archived</td>
-                                                <td>@ticket.TicketType</td>
-                                                <td>@ticket.TicketStatus</td>
-                                                <td>@ticket.TicketPriority</td>
+                                                <tr>
+                                                    <td>@ticket.Title</td>
+                                                    <td>@ticket.Created.ToString("MMM dd, yyyy - HH:mm")</td>
+                                                    <td>@ticket.Updated</td>
+                                                    <td>@ticket.Archived</td>
+                                                    <td>@ticket.TicketType</td>
+                                                    <td>@ticket.TicketStatus</td>
+                                                    <td>@ticket.TicketPriority</td>
+                                                </tr>
                                             }
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>

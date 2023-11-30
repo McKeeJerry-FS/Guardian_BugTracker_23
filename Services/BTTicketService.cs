@@ -1,10 +1,23 @@
-﻿using Guardian_BugTracker_23.Models;
+﻿using Guardian_BugTracker_23.Data;
+using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Guardian_BugTracker_23.Services
 {
     public class BTTicketService : IBTTicketService
     {
+
+        private readonly ILogger<BTTicketService> _logger;
+        private readonly ApplicationDbContext _context;
+
+        public BTTicketService(ApplicationDbContext context,
+                                ILogger<BTTicketService> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
+
         public Task AddTicketAsync(Ticket? ticket)
         {
             throw new NotImplementedException();
@@ -30,9 +43,22 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Ticket>> GetAllTicketsByCompanyIdAsync(int? companyId)
+        public async Task<List<Ticket>> GetAllTicketsByCompanyIdAsync(int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<Ticket> result = await _context.Tickets.Where(t => t.Project!.CompanyId == companyId)
+                                                                   .Include(t => t.DeveloperUser)
+                                                                   .Include(t => t.Project)
+                                                                   .Include(t => t.SubmitterUser)
+                                                                   .ToListAsync();
+                return result.ToList();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task<Ticket> GetTicketAsNoTrackingAsync(int? ticketId, int? companyId)
