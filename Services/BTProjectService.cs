@@ -4,6 +4,7 @@ using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Guardian_BugTracker_23.Services
 {
@@ -56,15 +57,21 @@ namespace Guardian_BugTracker_23.Services
 
         public async Task<List<Project>> GetAllProjectsByCompanyIdAsync(int? companyId)
         {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+
             try
             {
                 IEnumerable<Project> results = new List<Project>();
                 results = await _context.Projects.Where(p => p.CompanyId == companyId).ToListAsync();
+                Log.Information("Projects were acquired successfully", DateTimeOffset.Now.ToString("MM dd, yyyy - HH:mm"));
                 _logger.LogInformation("Connection Successful: Projects loaded");
                 return results.ToList();
             }
             catch (Exception ex)
             {
+                Log.Warning($"Something went wrong: {ex}", DateTimeOffset.Now.ToString("MM dd, yyyy - HH:mm"));
                 _logger.LogError("Projects not found.");
                 throw;
             }

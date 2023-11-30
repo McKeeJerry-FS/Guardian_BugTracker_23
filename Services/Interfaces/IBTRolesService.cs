@@ -7,7 +7,7 @@ namespace Guardian_BugTracker_23.Services.Interfaces
     {
         public Task<bool> AddUserToRoleAsync(BTUser? user, string? roleName);
 
-        public Task<List<IdentityRole>> GetRolesAsync();
+        public Task<IEnumerable<IdentityRole>> GetRolesAsync();
 
         public Task<IEnumerable<string>?> GetUserRolesAsync(BTUser? user);
 

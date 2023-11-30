@@ -10,7 +10,7 @@ namespace Guardian_BugTracker_23.Extensions
         public BTUserClaimsPrincipalFactory(UserManager<BTUser> userManager,
                                             RoleManager<IdentityRole> roleManager,
                                             IOptions<IdentityOptions> optionsAccessor) :
-            base(userManager, roleManager, optionsAccessor)
+                                            base(userManager, roleManager, optionsAccessor)
         {
             
         }

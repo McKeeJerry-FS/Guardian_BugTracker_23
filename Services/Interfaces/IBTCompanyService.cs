@@ -6,7 +6,7 @@ namespace Guardian_BugTracker_23.Services.Interfaces
     {
         public Task<Company> GetCompanyInfoAsync(int? companyId);
 
-        public Task<List<BTUser>> GetMembersAsync(int? companyId);
+        public Task<IEnumerable<BTUser>> GetMembersAsync(int? companyId);
 
         public Task<List<Project>> GetProjectsAsync(int? companyId);
 

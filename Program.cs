@@ -22,7 +22,9 @@ builder.Services.AddIdentity<BTUser, IdentityRole>(options => options.SignIn.Req
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddClaimsPrincipalFactory<BTUserClaimsPrincipalFactory>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddMvc();
+
+builder.Services.AddLogging(builder => builder.AddConsole());
 
 // Adding Custom Services
 builder.Services.AddScoped<IBTCompanyService, BTCompanyService>();
@@ -40,6 +42,9 @@ builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IEmailSender, EmailService>();
 
 var app = builder.Build();
+
+var loggerFactory = app.Services.GetService<ILoggerFactory>();
+loggerFactory?.AddFile(builder.Configuration["Logging:LogFilePath"]!.ToString());
 
 var scope = app.Services.CreateScope();
 
