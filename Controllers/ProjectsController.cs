@@ -9,10 +9,12 @@ using Guardian_BugTracker_23.Data;
 using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
 using X.PagedList;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Guardian_BugTracker_23.Controllers
 {
-    public class ProjectsController : Controller
+    [Authorize]
+    public class ProjectsController : BTBaseController
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ProjectsController> _logger;
@@ -39,7 +41,7 @@ namespace Guardian_BugTracker_23.Controllers
             //projects = await (await _btProjectService.GetAllProjectsASync()).ToPagedListAsync(page, pageSize);
             //return View(projects);
             List<Project> results;
-            results = await _btProjectService.GetAllProjectsASync();
+            results = await _btProjectService.GetAllProjectsByCompanyIdAsync(_companyId);
             return View(results.ToList());
 
         }
@@ -47,14 +49,18 @@ namespace Guardian_BugTracker_23.Controllers
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Projects == null)
+            // modify the code for the Service layer once it is working as it should here
+
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .Include(p => p.Company)
-                .FirstOrDefaultAsync(m => m.Id == id);
+
+            var project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
+                
+
+
             if (project == null)
             {
                 return NotFound();
@@ -83,11 +89,11 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 _context.Add(project);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("Project was successfully created", DateTimeOffset.Now);
+                _logger.LogInformation($"Project was successfully created: {DateTimeOffset.Now: MM dd, yyyy - HH:mm}");
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriority);
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", _companyId);
             return View(project);
         }
 
@@ -106,7 +112,7 @@ namespace Guardian_BugTracker_23.Controllers
             }
 
             ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriority);
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", _companyId);
             return View(project);
         }
 
@@ -127,14 +133,14 @@ namespace Guardian_BugTracker_23.Controllers
                 try
                 {
                     _context.Update(project);
-                    _logger.LogInformation("Project was successfully updated", DateTimeOffset.Now.ToUniversalTime());
+                    _logger.LogInformation($"Project was successfully updated: {DateTimeOffset.Now.ToUniversalTime()}");
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ProjectExists(project.Id))
                     {
-                        _logger.LogError("Project was not found", DateTimeOffset.Now.ToUniversalTime());
+                        _logger.LogError($"Project was not found: {DateTimeOffset.Now.ToUniversalTime()}");
                         return NotFound();
                     }
                     else
@@ -146,7 +152,7 @@ namespace Guardian_BugTracker_23.Controllers
             }
             ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriority);
 
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", project.CompanyId);
+            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", _companyId);
             return View(project);
         }
 

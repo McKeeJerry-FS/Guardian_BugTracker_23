@@ -2,6 +2,7 @@
 using Guardian_BugTracker_23.Data;
 using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -85,9 +86,22 @@ namespace Guardian_BugTracker_23.Services
         }
 
         [HttpGet]
-        public Task<Project> GetProjectByIdAsync(int? projectId, int? companyId)
+        public async Task<Project> GetProjectByIdAsync(int? projectId, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var project = await _context.Projects.Where(p => p.Id == projectId)
+                                               .Include(p => p.Company)
+                                               .FirstOrDefaultAsync();
+                
+                return project;
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, DateTimeOffset.Now.ToString("MM dd, yyyy - HH:mm:ss"));
+                throw;
+            }
         }
 
         public Task<BTUser> GetProjectManagerAsync(int? projectId)
