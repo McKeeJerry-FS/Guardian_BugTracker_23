@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Guardian_BugTracker_23.Data;
 using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
+using Guardian_BugTracker_23.Data.Enums;
 using X.PagedList;
 using Microsoft.AspNetCore.Authorization;
+using Guardian_BugTracker_23.Models.ViewModels;
 
 namespace Guardian_BugTracker_23.Controllers
 {
@@ -19,15 +21,18 @@ namespace Guardian_BugTracker_23.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ProjectsController> _logger;
         private readonly IBTProjectService _btProjectService;
+        private readonly IBTRolesService _btRolesService;
 
         public ProjectsController(ApplicationDbContext context,
                                   ILogger<ProjectsController> logger,
-                                  IBTProjectService bTProjectService
+                                  IBTProjectService bTProjectService,
+                                  IBTRolesService bTRolesService
                                   )
         {
             _context = context;
             _logger = logger;
             _btProjectService = bTProjectService;
+            _btRolesService = bTRolesService;
         }
 
         // GET: Projects
@@ -58,7 +63,7 @@ namespace Guardian_BugTracker_23.Controllers
 
 
             var project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
-                
+
 
 
             if (project == null)
@@ -189,10 +194,65 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 _context.Projects.Remove(project);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
+        // AssignPM Methods
+        [HttpGet]
+        public async Task<IActionResult> AssignPM(int? id)
+        {
+            Project? project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
+
+            if(id == null) { return NotFound(); }
+
+            //Get the list of project managers for the company
+            IEnumerable<BTUser> projectManagers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), _companyId);
+
+            // Get the current PM if on is assigned
+            BTUser? currentPM = await _btProjectService.GetProjectManagerAsync(id);
+
+            // Instantiate and Initialize the ViewModel
+            AssignPMViewModel vm = new()
+            {
+                ProjectId = project.Id,
+                ProjectName = project.Name,
+                PMList = new SelectList(projectManagers, "Id", "FullName", currentPM?.Id),
+                PMId = currentPM?.Id,
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignPM(AssignPMViewModel vm)
+        {
+            if(!string.IsNullOrEmpty(vm.PMId))
+            {
+                if(await _btProjectService.AddProjectManagerAsync(vm.PMId, vm.ProjectId))
+                {
+                    return RedirectToAction(nameof(Details), new { id = vm.ProjectId });
+                }
+                else
+                {
+                    ModelState.AddModelError("PMId", "Error assigning PM");
+                    return View(vm);
+                }
+            }
+
+            ModelState.AddModelError("PMId", "No Project Manager chosen. Please select a PM");
+            IEnumerable<BTUser> projectManagers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), _companyId);
+            BTUser? currentPM = await _btProjectService.GetProjectManagerAsync(vm.ProjectId);
+            vm.PMList = new SelectList(projectManagers, "Id", "Name", currentPM?.Id);
+
+            return View(vm);
+
+
+        }
+
 
         private bool ProjectExists(int id)
         {

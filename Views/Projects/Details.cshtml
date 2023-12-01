@@ -1,8 +1,16 @@
 ﻿@model Guardian_BugTracker_23.Models.Project
+@inject UserManager<BTUser> _UserManager
 @inject IBTTicketService _btTicketService
+@inject IBTProjectService _btProjectService
+@inject IBTRolesService _btRolesService
+@inject IBTFileService _btFileService
+
 
 @{
     ViewData["Title"] = "Details";
+    BTUser? projectManager = await(_btProjectService.GetProjectManagerAsync(Model.Id));
+    BTUser? btUser = await (_btProjectService.GetProjectMemberAsync(Model.Id));
+
 }
 
 <h1>Project Details</h1>
@@ -69,13 +77,36 @@
                         </div>
                         <div class="body" style="overflow-y:auto;height:300px;">
                             @* if() logic for Avatar/Default etc *@
-                            @if (User.IsInRole("Admin"))
+                            @if (projectManager != null)
                             {
-                                <button class="btn btn-primary" type="submit">Add Project Manager</button>
+                                <div>
+
+                                    <img class="rounded-circle" style="width:15%;height:15%;" src="@(_btFileService.ConvertByteArrayToFile(projectManager.AvatarData!,projectManager.AvatarContentType!,DefaultImage.BTUserImage))" alt="">
+
+                                    <div>
+                                        <h5>@projectManager.FullName</h5>
+                                        <span>@projectManager.Email</span>
+                                        <p class="text-muted m-b-0">Project Manager</p>
+                                        @if (User.IsInRole(nameof(BTRoles.Admin)) || (btUser?.Id == projectManager.Id))
+                                        {
+                                            <a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id">Manage Team</a>
+                                        }
+
+                                    </div>
+                                </div>
                             }
-                            else if (User.IsInRole("ProjectManager"))
+                            else
                             {
-                                
+                                <div>
+                                    <img class="rounded-circle" style="width:60px;height:60px;" src="https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png" alt="">
+                                    <div class="wid-u-info">
+                                        <h5 class="text-muted m-b-0">Not Assigned</h5>
+                                        @if (User.IsInRole(nameof(BTRoles.Admin)))
+                                        {
+                                            <span><a asp-action="AssignPM" asp-controller="Projects" asp-route-id="@Model.Id" class="btn btn-xs btn-outline-info">Assign PM</a></span>
+                                        }
+                                    </div>
+                                </div>
                             }
                         </div>
                     </div>
@@ -93,11 +124,16 @@
 
                             @if (User.IsInRole("Admin"))
                             {
+
                                 <button class="btn btn-primary" type="submit">Add Team Members</button>
+                                <a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id">Manage Team</a>
+
                             }
                             else if (User.IsInRole("ProjectManager"))
                             {
                                 <button class="btn btn-primary" type="submit">Add Team Members</button>
+                                <a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id">Manage Team</a>
+
                             }
                             else
                             {
@@ -159,7 +195,8 @@
                                     <tbody>
                                             @* Table body *@
                                             @*foreach statement for each ticket in tickets*@
-                                            @foreach (var ticket in @Model.Tickets)
+                                            @* Add a service method for getting all tickets by project id*@
+                                            @foreach (var ticket in (await _btTicketService.GetAllTicketsByCompanyIdAsync(Model.CompanyId)))
                                             {
                                                 <tr>
                                                     <td>@ticket.Title</td>

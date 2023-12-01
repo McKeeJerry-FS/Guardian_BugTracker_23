@@ -16,6 +16,7 @@ namespace Guardian_BugTracker_23.Services.Interfaces
         public Task<List<Project>> GetAllProjectsASync();
         public Task<Project> GetProjectByIdAsync(int? projectId, int? companyId);
         public Task<BTUser> GetProjectManagerAsync(int? projectId);
+        public Task<BTUser> GetProjectMemberAsync(int? projectId);
         public Task<List<BTUser>> GetProjectMembersByRoleAsync(int? projectId, string? roleName, int? companyId);
 
         public Task<IEnumerable<ProjectPriority>> GetProjectPrioritiesAsync();

@@ -42,6 +42,11 @@ namespace Guardian_BugTracker_23.Models
         public byte[]? ImageFileData { get; set; }
         public string? ImageFileType { get; set; }
 
+        [NotMapped]
+        public IFormFile? AvatarFormFile { get; set; }
+        public byte[]? AvatarData { get; set; }
+        public string? AvatarContentType { get; set; }
+
         // Foreign Key
         public int CompanyId { get; set; }
 

@@ -4,6 +4,7 @@ using Guardian_BugTracker_23.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Guardian_BugTracker_23.Data.Enums;
 using Serilog;
 
 namespace Guardian_BugTracker_23.Services
@@ -94,14 +95,37 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task<List<BTUser>> GetUsersInRoleAsync(string? roleName, int? companyId)
+        public async Task<List<BTUser>> GetUsersInRoleAsync(string? roleName, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                IEnumerable<BTUser>? usersInRoles = await _userManager.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager)); 
+                return usersInRoles.ToList();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
-        public Task<bool> IsUserInRoleAsync(BTUser? member, string? roleName)
+        public async Task<bool> IsUserInRoleAsync(BTUser? member, string? roleName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                bool result = false;
+                if (member != null && roleName != null)
+                {
+                    await _userManager.IsInRoleAsync(member, roleName);
+                    result = true;
+                }
+                return result;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<bool> RemoveUserFromRoleAsync(BTUser? user, string? roleName)
