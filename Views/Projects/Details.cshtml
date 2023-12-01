@@ -159,7 +159,7 @@
                                     <tbody>
                                             @* Table body *@
                                             @*foreach statement for each ticket in tickets*@
-                                            @foreach (var ticket in (await _btTicketService.GetAllTicketsByCompanyIdAsync(Model.CompanyId)))
+                                            @foreach (var ticket in @Model.Tickets)
                                             {
                                                 <tr>
                                                     <td>@ticket.Title</td>
