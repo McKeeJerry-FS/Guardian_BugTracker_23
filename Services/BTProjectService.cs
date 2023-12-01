@@ -1,5 +1,6 @@
 ﻿using Guardian_BugTracker_23.Controllers;
 using Guardian_BugTracker_23.Data;
+using Guardian_BugTracker_23.Data.Enums;
 using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -15,12 +16,15 @@ namespace Guardian_BugTracker_23.Services
 
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ProjectsController> _logger;
+        private readonly IBTRolesService _bTRolesService;
 
         public BTProjectService(ApplicationDbContext context,
-                                ILogger<ProjectsController> logger)
+                                ILogger<ProjectsController> logger,
+                                IBTRolesService bTRolesService)
         {
             _context = context;
             _logger = logger;
+            _bTRolesService = bTRolesService;
         }
 
 
@@ -29,9 +33,33 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> AddMemberToProjectAsync(BTUser? member, int? projectId)
+        public async Task<bool> AddMemberToProjectAsync(BTUser? member, int? projectId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (member != null && projectId != null)
+                {
+                    Project? project = await GetProjectByIdAsync(projectId, member.CompanyId);
+
+                    if (project != null)
+                    {
+                        // Project instance must "Include" Members to do the following:
+                        bool IsOnProject = project.Members.Any(m => m.Id == member.Id);
+                        if (!IsOnProject)
+                        {
+                            project.Members.Add(member);
+                            await _context.SaveChangesAsync();
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task AddProjectAsync(Project project)
@@ -39,9 +67,40 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> AddProjectManagerAsync(string? userId, int? projectId)
+        public async Task<bool> AddProjectManagerAsync(string? userId, int? projectId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (userId != null && projectId != null)
+                {
+                    BTUser? currentPM = await GetProjectManagerAsync(projectId);
+                    BTUser? selectedPM = await _context.Users.FindAsync(userId);
+
+                    //Remove current PM
+                    if (currentPM != null)
+                    {
+                        await RemoveProjectManagerAsync(projectId);
+                    }
+
+                    // Add new PM
+                    try
+                    {
+                        await AddMemberToProjectAsync(selectedPM!, projectId);
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task ArchiveProjectAsync(Project? project, int? companyId)
@@ -124,9 +183,33 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> RemoveMemberFromProjectAsync(BTUser? member, int? projectId)
+        public async Task<bool> RemoveMemberFromProjectAsync(BTUser? member, int? projectId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (member != null && projectId != null)
+                {
+                    Project? project = await GetProjectByIdAsync(projectId, member.CompanyId);
+
+                    if (project != null)
+                    {
+                        // Project instance must "Include" Members to do the following:
+                        bool IsOnProject = project.Members.Any(m => m.Id == member.Id);
+                        if (!IsOnProject)
+                        {
+                            project.Members.Remove(member);
+                            await _context.SaveChangesAsync();
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task RemoveMembersFromProjectAsync(int? projectId, int? companyId)
@@ -134,9 +217,31 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task RemoveProjectManagerAsync(int? projectId)
+        public async Task RemoveProjectManagerAsync(int? projectId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (projectId != null)
+                {
+                    Project? project = await _context.Projects.Include(p => p.Members).FirstOrDefaultAsync(p => p.Id == projectId);
+                    if (project != null)
+                    {
+                        foreach(BTUser member in project!.Members)
+                        {
+                            if (await _bTRolesService.IsUserInRoleAsync(member, nameof(BTRoles.ProjectManager)))
+                            {
+                                // Remove BTUser from project
+                                await RemoveMemberFromProjectAsync(member, projectId);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task RestoreProjectAsync(Project? project, int? companyId)

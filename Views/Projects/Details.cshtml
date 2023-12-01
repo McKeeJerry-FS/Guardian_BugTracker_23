@@ -159,7 +159,7 @@
                                         <tr>
                                             @* Table body *@
                                             @*foreach statement for each ticket in tickets*@
-                                            @foreach (var ticket in Model.Tickets)
+                                            @foreach (var ticket in @Model.Tickets)
                                             {
                                                 <td>@ticket.Title</td>
                                                 <td>@ticket.Created</td>
