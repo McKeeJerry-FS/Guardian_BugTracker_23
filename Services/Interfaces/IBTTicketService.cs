@@ -11,6 +11,7 @@ namespace Guardian_BugTracker_23.Services.Interfaces
 
         public Task UpdateTicketAsync(Ticket? ticket);
         public Task<List<Ticket>> GetAllTicketsByCompanyIdAsync(int? companyId);
+        public Task<List<Ticket>> GetAllTicketsByProjectIdAsync(int? projectId);
         public Task<Ticket> GetTicketAsNoTrackingAsync(int? ticketId, int? companyId);
         public Task<Ticket> GetTicketByIdAsync(int? ticketId, int? companyId);
         public Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int? ticketAttachmentId);

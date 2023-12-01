@@ -61,6 +61,24 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
+        public async Task<List<Ticket>> GetAllTicketsByProjectIdAsync(int? projectId)
+        {
+            try
+            {
+                IEnumerable<Ticket> result = await _context.Tickets.Where(t => t.Project!.Id == projectId)
+                                                                   .Include(t => t.DeveloperUser)
+                                                                   .Include(t => t.Project)
+                                                                   .Include(t => t.SubmitterUser)
+                                                                   .ToListAsync();
+                return result.ToList();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public Task<Ticket> GetTicketAsNoTrackingAsync(int? ticketId, int? companyId)
         {
             throw new NotImplementedException();

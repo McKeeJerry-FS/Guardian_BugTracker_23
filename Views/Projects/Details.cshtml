@@ -195,8 +195,8 @@
                                     <tbody>
                                             @* Table body *@
                                             @*foreach statement for each ticket in tickets*@
-                                            @* Add a service method for getting all tickets by project id*@
-                                            @foreach (var ticket in (await _btTicketService.GetAllTicketsByCompanyIdAsync(Model.CompanyId)))
+                                            @* TODO: Add a service method for getting all tickets by project id = COMPLETED!*@
+                                            @foreach (var ticket in (await _btTicketService.GetAllTicketsByProjectIdAsync(Model.Id)))
                                             {
                                                 <tr>
                                                     <td>@ticket.Title</td>
