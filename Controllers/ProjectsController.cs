@@ -254,6 +254,8 @@ namespace Guardian_BugTracker_23.Controllers
         }
 
 
+
+
         private bool ProjectExists(int id)
         {
           return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();

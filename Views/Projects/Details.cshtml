@@ -198,15 +198,17 @@
                                             @* TODO: Add a service method for getting all tickets by project id = COMPLETED!*@
                                             @foreach (var ticket in (await _btTicketService.GetAllTicketsByProjectIdAsync(Model.Id)))
                                             {
-                                                <tr>
-                                                    <td>@ticket.Title</td>
-                                                    <td>@ticket.Created.ToString("MMM dd, yyyy - HH:mm")</td>
-                                                    <td>@ticket.Updated</td>
-                                                    <td>@ticket.Archived</td>
-                                                    <td>@ticket.TicketType</td>
-                                                    <td>@ticket.TicketStatus</td>
-                                                    <td>@ticket.TicketPriority</td>
-                                                </tr>
+                                                <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">
+                                                    <tr>
+                                                        <td>@ticket.Title</td>
+                                                        <td>@ticket.Created.ToString("MMM dd, yyyy - HH:mm")</td>
+                                                        <td>@ticket.Updated</td>
+                                                        <td>@ticket.Archived</td>
+                                                        <td>@ticket.TicketType</td>
+                                                        <td>@ticket.TicketStatus</td>
+                                                        <td>@ticket.TicketPriority</td>
+                                                    </tr>
+                                                </a>
                                             }
                                     </tbody>
                                 </table>
