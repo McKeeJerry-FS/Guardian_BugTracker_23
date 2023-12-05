@@ -20,16 +20,28 @@ namespace Guardian_BugTracker_23.Services
             _logger = logger;
         }
 
-        public Task AddTicketAsync(Ticket? ticket)
+        public async Task AddTicketAsync(Ticket? ticket)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if(ticket != null)
+                {
+                    _context.Add(ticket);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task AddTicketAttachmentAsync(TicketAttachment? ticketAttachment)
         {
 			try
 			{
-				await _context.AddAsync(ticketAttachment);
+				_context.Add(ticketAttachment);
 				await _context.SaveChangesAsync();
 			}
 			catch (Exception)
@@ -75,6 +87,7 @@ namespace Guardian_BugTracker_23.Services
                                                                    .Include(t => t.DeveloperUser)
                                                                    .Include(t => t.Project)
                                                                    .Include(t => t.SubmitterUser)
+                                                                   .AsNoTracking()
                                                                    .ToListAsync();
                 return result.ToList();
             }
@@ -93,6 +106,7 @@ namespace Guardian_BugTracker_23.Services
                                                                    .Include(t => t.DeveloperUser)
                                                                    .Include(t => t.Project)
                                                                    .Include(t => t.SubmitterUser)
+                                                                   .AsNoTracking()
                                                                    .ToListAsync();
                 return result.ToList();
             }
@@ -129,14 +143,11 @@ namespace Guardian_BugTracker_23.Services
             try
             {
                 return await _context.Tickets.Include(t => t.DeveloperUser)
-                                             .Include(t => t.Project)
-                                             .Include(t => t.TicketPriority)
-                                             .Include(t => t.TicketStatus)
-                                             .Include(t => t.TicketType)
-                                             .Include(t => t.Comments)
-                                             .Include(t => t.Attachments)
-                                             .Include(t => t.History)
-                                             .FirstOrDefaultAsync(t => t.Id == ticketId);
+                                                .Include(t => t.Project)
+                                                .Include(t => t.SubmitterUser)
+                                                .Include(t => t.Attachments)
+                                                .Include(t => t.Comments)
+                                                .FirstOrDefaultAsync(m => m.Id == ticketId);
             }
             catch (Exception ex)
             {
@@ -188,9 +199,22 @@ namespace Guardian_BugTracker_23.Services
 			}
 		}
 
-        public Task UpdateTicketAsync(Ticket? ticket)
+        public async Task UpdateTicketAsync(Ticket? ticket)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if(ticket != null)
+                {
+                    ticket.Updated = DateTimeOffset.Now;
+                    _context.Update(ticket);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

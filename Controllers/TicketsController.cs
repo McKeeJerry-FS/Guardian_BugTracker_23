@@ -16,7 +16,7 @@ using Guardian_BugTracker_23.Services.Interfaces;
 
 namespace Guardian_BugTracker_23.Controllers
 {
-    public class TicketsController : Controller
+    public class TicketsController : BTBaseController
     {
         private readonly ApplicationDbContext _context;
         private readonly IBTFileService _bTFileService;
@@ -37,8 +37,8 @@ namespace Guardian_BugTracker_23.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Tickets.Include(t => t.DeveloperUser).Include(t => t.Project).Include(t => t.SubmitterUser);
-            return View(await applicationDbContext.ToListAsync());
+            List<Ticket> tickets = await _btTicketService.GetAllTicketsByCompanyIdAsync(_companyId);
+            return View(tickets);
         }
 
         public async Task<IActionResult> AssignTicket(int? id)
@@ -54,21 +54,10 @@ namespace Guardian_BugTracker_23.Controllers
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Tickets == null)
-            {
-                return NotFound();
-            }
-
             // New Identity Extention in USE
             int companyId = User.Identity!.GetCompanyId();
 
-            var ticket = await _context.Tickets
-                .Include(t => t.DeveloperUser)
-                .Include(t => t.Project)
-                .Include(t => t.SubmitterUser)
-                .Include(t => t.Attachments)
-                .Include(t => t.Comments)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
             if (ticket == null)
             {
                 return NotFound();
@@ -98,8 +87,7 @@ namespace Guardian_BugTracker_23.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(ticket);
-                await _context.SaveChangesAsync();
+                await _btTicketService.AddTicketAsync(ticket);
                 return RedirectToAction(nameof(Index));
             }
             
@@ -115,12 +103,9 @@ namespace Guardian_BugTracker_23.Controllers
         // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Tickets == null)
-            {
-                return NotFound();
-            }
 
-            var ticket = await _context.Tickets.FindAsync(id);
+
+            var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
             if (ticket == null)
             {
                 return NotFound();
@@ -150,8 +135,7 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 try
                 {
-                    _context.Update(ticket);
-                    await _context.SaveChangesAsync();
+                    await _btTicketService.UpdateTicketAsync(ticket);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -178,16 +162,8 @@ namespace Guardian_BugTracker_23.Controllers
         // GET: Tickets/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Tickets == null)
-            {
-                return NotFound();
-            }
 
-            var ticket = await _context.Tickets
-                .Include(t => t.DeveloperUser)
-                .Include(t => t.Project)
-                .Include(t => t.SubmitterUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
             if (ticket == null)
             {
                 return NotFound();
@@ -201,11 +177,8 @@ namespace Guardian_BugTracker_23.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Tickets == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
-            }
-            var ticket = await _context.Tickets.FindAsync(id);
+            
+            var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
             if (ticket != null)
             {
                 await _btTicketService.ArchiveTicketAsync(ticket);
@@ -257,17 +230,8 @@ namespace Guardian_BugTracker_23.Controllers
         [HttpGet]
         public async Task<IActionResult> Restore(int? id)
         {
-			if (id == null || _context.Tickets == null)
-			{
-				return NotFound();
-			}
-
-			var ticket = await _context.Tickets
-                .Where(t => t.Archived == true)
-				.Include(t => t.DeveloperUser)
-				.Include(t => t.Project)
-				.Include(t => t.SubmitterUser)
-				.FirstOrDefaultAsync(m => m.Id == id);
+			
+            var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
 			if (ticket == null)
 			{
 				return NotFound();
@@ -280,11 +244,8 @@ namespace Guardian_BugTracker_23.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreConfirmed(int? id)
         {
-			if (_context.Tickets == null)
-			{
-				return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
-			}
-			var ticket = await _context.Tickets.FindAsync(id);
+			
+			var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
 			if (ticket != null)
 			{
 				await _btTicketService.RestoreTicketAsync(ticket);
