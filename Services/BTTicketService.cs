@@ -1,7 +1,9 @@
 ﻿using Guardian_BugTracker_23.Data;
 using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using NuGet.ProjectModel;
 
 namespace Guardian_BugTracker_23.Services
 {
@@ -23,19 +25,41 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task AddTicketAttachmentAsync(TicketAttachment? ticketAttachment)
+        public async Task AddTicketAttachmentAsync(TicketAttachment? ticketAttachment)
         {
-            throw new NotImplementedException();
-        }
+			try
+			{
+				await _context.AddAsync(ticketAttachment);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
 
         public Task AddTicketCommentAsync(TicketComment? ticketComment)
         {
             throw new NotImplementedException();
         }
 
-        public Task ArchiveTicketAsync(Ticket? ticket)
+        public async Task ArchiveTicketAsync(Ticket? ticket)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (ticket != null)
+                {
+					ticket.Archived = true;
+                    _logger.LogInformation("Ticket successfully archived");
+                    await _context.SaveChangesAsync();
+				}
+			}
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public Task AssignTicketAsync(int? ticketId, string? userId)
@@ -84,14 +108,41 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int? ticketAttachmentId)
+        public async Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int? ticketAttachmentId)
         {
-            throw new NotImplementedException();
-        }
+			try
+			{
+				TicketAttachment ticketAttachment = await _context.Attachments
+																  .Include(t => t.BTUser)
+																  .FirstOrDefaultAsync(t => t.Id == ticketAttachmentId);
+				return ticketAttachment;
+			}
+			catch (Exception)
+			{
 
-        public Task<Ticket> GetTicketByIdAsync(int? ticketId, int? companyId)
+				throw;
+			}
+		}
+
+        public async Task<Ticket> GetTicketByIdAsync(int? ticketId, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _context.Tickets.Include(t => t.DeveloperUser)
+                                             .Include(t => t.Project)
+                                             .Include(t => t.TicketPriority)
+                                             .Include(t => t.TicketStatus)
+                                             .Include(t => t.TicketType)
+                                             .Include(t => t.Comments)
+                                             .Include(t => t.Attachments)
+                                             .Include(t => t.History)
+                                             .FirstOrDefaultAsync(t => t.Id == ticketId);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public Task<BTUser?> GetTicketDeveloperAsync(int? ticketId, int? companyId)
@@ -119,10 +170,23 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task RestoreTicketAsync(Ticket? ticket)
+        public async Task RestoreTicketAsync(Ticket? ticket)
         {
-            throw new NotImplementedException();
-        }
+			try
+			{
+				if (ticket != null)
+				{
+					ticket.Archived = false;
+					_logger.LogInformation("Ticket successfully restored");
+					await _context.SaveChangesAsync();
+				}
+			}
+			catch (Exception ex)
+			{
+                _logger.LogError($"Error: {ex} : {DateTimeOffset.Now: MMM dd, yyyy - HH:mm}");
+				throw;
+			}
+		}
 
         public Task UpdateTicketAsync(Ticket? ticket)
         {

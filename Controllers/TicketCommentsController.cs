@@ -7,16 +7,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Guardian_BugTracker_23.Data;
 using Guardian_BugTracker_23.Models;
+using Microsoft.AspNetCore.Identity;
+using Guardian_BugTracker_23.Services.Interfaces;
 
 namespace Guardian_BugTracker_23.Controllers
 {
     public class TicketCommentsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BTUser> _userManager;
+        private readonly ILogger<TicketCommentsController> _logger;
+        private readonly IBTTicketService _ticketService;
 
-        public TicketCommentsController(ApplicationDbContext context)
+        public TicketCommentsController(ApplicationDbContext context,
+                                        UserManager<BTUser> userManager,
+                                        ILogger<TicketCommentsController> logger,
+                                        IBTTicketService bTTicketService)
         {
             _context = context;
+            _userManager = userManager;
+            _logger = logger;
+            _ticketService = bTTicketService;
         }
 
         // GET: TicketComments
@@ -49,6 +60,7 @@ namespace Guardian_BugTracker_23.Controllers
         // GET: TicketComments/Create
         public IActionResult Create()
         {
+
             ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description");
             ViewData["UserId"] = new SelectList(_context.BTUsers, "Id", "Id");
             return View();
@@ -59,17 +71,24 @@ namespace Guardian_BugTracker_23.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Comment,Created,TicketId,UserId")] TicketComment ticketComment)
+        public async Task<IActionResult> Create([Bind("Comment,TicketId")] TicketComment ticketComment)
         {
+            
+
+            ModelState.Remove("UserId");
+            
             if (ModelState.IsValid)
             {
+                ticketComment.UserId = _userManager.GetUserId(User);
+                ticketComment.Created = DateTimeOffset.Now;
+                
                 _context.Add(ticketComment);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                
             }
             ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", ticketComment.TicketId);
             ViewData["UserId"] = new SelectList(_context.BTUsers, "Id", "Id", ticketComment.UserId);
-            return View(ticketComment);
+            return RedirectToAction("Details", "Tickets", new { Id = ticketComment.TicketId});
         }
 
         // GET: TicketComments/Edit/5

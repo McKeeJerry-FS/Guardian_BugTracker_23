@@ -22,6 +22,9 @@ namespace Guardian_BugTracker_23.Services.Interfaces
         public Task<IEnumerable<TicketStatus>> GetTicketStatusesAsync();
         public Task<IEnumerable<TicketType>> GetTicketTypesAsync();
 
+
+
+
         public Task ArchiveTicketAsync(Ticket? ticket);
         public Task RestoreTicketAsync(Ticket? ticket);
     }

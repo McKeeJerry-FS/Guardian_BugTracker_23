@@ -253,7 +253,31 @@ namespace Guardian_BugTracker_23.Controllers
 
         }
 
+        // AssignPM Methods
+        //[HttpGet]
+        //public async Task<IActionResult> AssignProjectMembers(int? id)
+        //{
+        //    Project? project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
 
+        //    if (id == null) { return NotFound(); }
+
+        //    //Get the list of project managers for the company
+        //    IEnumerable<BTUser> projectDevelopers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
+
+        //    // Get the current PM if on is assigned
+        //    BTUser? currentPM = await _btProjectService.GetProjectManagerAsync(id);
+
+        //    // Instantiate and Initialize the ViewModel
+        //    AssignPMViewModel vm = new()
+        //    {
+        //        ProjectId = project.Id,
+        //        ProjectName = project.Name,
+        //        PMList = new SelectList(projectDevelopers, "Id", "FullName", currentPM?.Id),
+        //        PMId = currentPM?.Id,
+        //    };
+
+        //    return View(vm);
+        //}
 
 
         private bool ProjectExists(int id)

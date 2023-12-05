@@ -1,4 +1,6 @@
 ﻿@model Guardian_BugTracker_23.Models.Ticket
+@inject IBTTicketService _btTicketService
+@inject IBTFileService FileService
 
 
 @{
@@ -60,17 +62,35 @@
 							<div class="card-body" style="overflow-y:auto;height:600px;">
 
 								@*Form and Logic for authorized users to add comments*@
-								<hr />
-								<h6>Comments</h6>
 								<ul class="right_chat list-unstyled mb-0">
 									@*Loop to show comments made for the Ticket*@
 									@foreach(var comment in Model.Comments)
 									{
-										<li>@comment.Comment</li>
+										<div class="card m-2">
+											<div class="card-body">
+												<div class="card-header">
+													<p class="fw-bold">@comment.User</p>
+												</div>
+												<div>
+													<p>@comment.Comment</p>
+													<small class="d-flex justify-content-end align-content-end">@comment.Created</small>
+												</div>
+												<div>
+													<a asp-action="Edit" asp-controller="TicketComments" asp-route-id="@comment.Id">Edit</a> |
+													<a asp-action="Details" asp-controller="TicketComments" asp-route-id="@comment.Id">Details</a> |
+													<a asp-action="Delete" asp-controller="TicketComments" asp-route-id="@comment.Id">Delete</a>
+												</div>
+											</div>
+										</div>
 									}
 								</ul>
 							</div>
 							<div class="card-footer">
+								<form asp-action="Create" asp-controller="TicketComments" method="post">
+									<input type="hidden" asp-for="Id" name="TicketId" />
+									<textarea class="form-control border border-1 border-secondary" rows="3" name="Comment"></textarea>
+									<button class="btn btn-primary mt-2" type="submit"> Add Comment</button>
+								</form>
 							</div>
 						</div>
 					</div>
@@ -86,9 +106,50 @@
 								@* Refer to the Ticket Attachments document for this section *@
 
 								@* Ticket attachments part 1 here *@
-
+								<div class="row clearfix">
+									<div>
+										<form asp-action="AddTicketAttachment" asp-controller="Tickets" enctype="multipart/form-data" method="post">
+											<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+											<input type="hidden" asp-for="@Model.Id" name="TicketId">
+											<div class="media-body ml-3">
+												<label>
+													Description
+													<input name="Description" type="text" class="form-control" />
+												</label><br />
+												<label class="btn btn-outline-primary btn-sm">
+													<input name="FormFile" type="file" class="form-control-file" />
+												</label>
+												<button type="submit" class="btn btn-outline-secondary btn-sm md-btn-flat">Submit</button>
+											</div>
+										</form>
+									</div>
+								</div>
 
 								@* Ticket attachments part 2 here *@
+
+								<hr />
+								<h6>Attachments</h6>
+								<div class="container">
+									<div class="row">
+										@foreach (TicketAttachment item in Model.Attachments)
+										{
+											<div class="col col-sm-2">
+												<a asp-action="ShowFile" asp-controller="Tickets" asp-route-Id="@item.Id">
+													<div class="icon text-center">
+														<img src="@FileService.GetFileIcon(item.FileName!)" style="height:50px;width:50px" data-bs-toggle="tooltip" data-bs-placement="top" title="" data-bs-original-title="@item.FileName" />
+													</div>
+												</a>
+												<div style="font-size:x-small">
+													<div class="file-name">
+														<strong>@item.Description</strong>
+														<p class="text-center"><strong>@item.FileName</strong></p>
+														<small class="text-center">Size: @FileService.FormatFileSize(item.FileData!.Length) </small>
+													</div>															
+												</div>
+											</div>
+										}
+									</div>
+								</div>
 
 							</div>
 							<div class="card-footer">

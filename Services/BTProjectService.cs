@@ -105,7 +105,15 @@ namespace Guardian_BugTracker_23.Services
 
         public Task ArchiveProjectAsync(Project? project, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                throw new NotImplementedException();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         // Testing
@@ -223,9 +231,19 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ProjectPriority>> GetProjectPrioritiesAsync()
+        public async Task<IEnumerable<ProjectPriority>> GetProjectPrioritiesAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                List<ProjectPriority> results = await _context.ProjectPriorities.Include(pp => pp.Id).ToListAsync();
+                _logger.LogInformation("Database successfully reached, ProjectPriorities list created.");
+                return results;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString(), DateTimeOffset.Now.ToString("MMM dd, yyyy - HH:mm"));
+                throw;
+            }
         }
 
         public Task<List<Project>?> GetUserProjectsAsync(string? userId)
