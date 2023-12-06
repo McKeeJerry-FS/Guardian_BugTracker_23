@@ -13,6 +13,7 @@ using Guardian_BugTracker_23.Models.ViewModels;
 using Guardian_BugTracker_23.Services;
 using Microsoft.AspNetCore.Identity;
 using Guardian_BugTracker_23.Services.Interfaces;
+using Guardian_BugTracker_23.Data.Enums;
 
 namespace Guardian_BugTracker_23.Controllers
 {
@@ -21,16 +22,19 @@ namespace Guardian_BugTracker_23.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IBTFileService _bTFileService;
         private readonly IBTTicketService _btTicketService;
+        private readonly IBTRolesService _btrolesService;
         private readonly UserManager<BTUser> _userManager;
 
         public TicketsController(ApplicationDbContext context,
                                  IBTFileService bTFileService,
                                  IBTTicketService bTTicketService,
-                                 UserManager<BTUser> userManager)
+                                 UserManager<BTUser> userManager,
+                                 IBTRolesService bTRolesService)
         {
             _context = context;
             _bTFileService = bTFileService;
             _btTicketService = bTTicketService;
+            _btrolesService = bTRolesService;
             _userManager = userManager;
         }
 
@@ -41,14 +45,18 @@ namespace Guardian_BugTracker_23.Controllers
             return View(tickets);
         }
 
-        public async Task<IActionResult> AssignTicket(int? id)
+        public async Task<IActionResult> AssignTicketDeveloper(int? id)
         {
-            AssignTicketVM vm = new()
-            {
-                
-            };
+            // Get Ticket info
+            Ticket? ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
+            // Get a list of Developers
+            List<BTUser> devs = await _btrolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
 
-            return View(vm);                                                                                                                                        
+            // Add the developer
+
+            // Return to the Details View
+
+            return View();                                                                                                                                        
         }
 
         // GET: Tickets/Details/5

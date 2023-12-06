@@ -2,6 +2,7 @@
 using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NuGet.ProjectModel;
 
@@ -12,12 +13,18 @@ namespace Guardian_BugTracker_23.Services
 
         private readonly ILogger<BTTicketService> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BTUser> _userManager;
+        private readonly IBTRolesService _rolesService;
 
         public BTTicketService(ApplicationDbContext context,
-                                ILogger<BTTicketService> logger)
+                                ILogger<BTTicketService> logger,
+                                UserManager<BTUser> userManager,
+                                IBTRolesService bTRolesService)
         {
             _context = context;
             _logger = logger;
+            _userManager = userManager;
+            _rolesService = bTRolesService;
         }
 
         public async Task AddTicketAsync(Ticket? ticket)
@@ -78,10 +85,23 @@ namespace Guardian_BugTracker_23.Services
         {
             try
             {
-                Ticket? ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
-                if (userId != null)
+                if(ticketId != null && userId != null)
                 {
-                    
+                    // Get Ticket
+                    Ticket? ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+                    // Check for Nulls
+                    if (ticket != null)
+                    {
+                        // Find the user based off the id
+                        // BTUser? user = await _context.Users.FindAsync(userId);
+                        if(await _context.Users.AnyAsync(u => u.Id == userId)) 
+                        { 
+                            // assign the user
+                            ticket.DeveloperUserId = userId;
+                            // save the changes
+                            await UpdateTicketAsync(ticket);
+                        }
+                    }
                 }
             }
             catch (Exception)

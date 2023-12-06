@@ -51,6 +51,38 @@
 						</div>
 					</div>
 				</div>
+				<div class="row mt-5 bg-secondary">
+					<div class="col">
+						<div class="card m-1 p-2">
+							<div class="card-body">
+								<div class="header">
+									<h2>Ticket Assignment</h2>
+									<hr />
+								</div>
+								<div class="body" style="overflow-y:auto;height:300px;">
+									@* Logic for avatars *@
+
+									@if (User.IsInRole("Admin"))
+									{
+										<a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Add Team Members</a>
+										<a class="btn btn-primary alert-primary" style="font:small" asp-action="RemoveAllTeamMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Remove All Team Members</a>
+									}
+									else if (User.IsInRole("ProjectManager"))
+									{
+										<a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Add Team Members</a>
+									}
+									
+									<h5>Developer Assigned: @Model.DeveloperUser?.FullName</h5>
+									<h5>Submitter Assigned: @Model.SubmitterUser?.FullName</h5>
+
+									
+									
+
+								</div>
+							</div>
+						</div>
+					</div>				
+				</div>
 			</div>
 			<div class="col-md-8 col col-cols-2 mt-5 ">
 				<div class="col">
