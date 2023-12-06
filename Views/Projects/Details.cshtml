@@ -130,14 +130,14 @@
                             @if (User.IsInRole("Admin"))
                             {
 
-                                <button class="btn btn-primary" type="submit">Add Team Members</button>
-                                <a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id">Manage Team</a>
-
+                                
+                                <a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Add Team Members</a>
+                                <a class="btn btn-primary alert-primary" style="font:small" asp-action="RemoveAllTeamMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Remove All Team Members</a>
                             }
                             else if (User.IsInRole("ProjectManager"))
                             {
-                                <button class="btn btn-primary" type="submit">Add Team Members</button>
-                                <a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id">Manage Team</a>
+                                
+                                <a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Add Team Members</a>
 
                             }
                             else

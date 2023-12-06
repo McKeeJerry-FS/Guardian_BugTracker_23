@@ -99,7 +99,7 @@ namespace Guardian_BugTracker_23.Services
         {
             try
             {
-                IEnumerable<BTUser>? usersInRoles = await _userManager.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager)); 
+                IEnumerable<BTUser>? usersInRoles = await _userManager.GetUsersInRoleAsync(roleName!); 
                 return usersInRoles.ToList();
             }
             catch (Exception)

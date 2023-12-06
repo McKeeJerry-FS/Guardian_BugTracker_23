@@ -28,9 +28,30 @@ namespace Guardian_BugTracker_23.Services
         }
 
 
-        public Task AddMembersToProjectAsync(IEnumerable<string>? userIds, int? projectId, int? companyId)
+        public async Task AddMembersToProjectAsync(IEnumerable<string>? userIds, int? projectId, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Project? project = await _context.Projects.Where(p => p.CompanyId == companyId)
+                                                          .FirstOrDefaultAsync(p => p.Id == projectId);
+
+                foreach (string userId in userIds!)
+                {
+                    BTUser? user = await _context.Users.FindAsync(userId);
+                    if (project != null && user != null) 
+                    {
+                        _logger.LogInformation($"{user.FullName} was found, {DateTimeOffset.Now}");
+                        project.Members!.Add(user);
+                        _logger.LogInformation($"{userId} was added to the project successfully, {DateTimeOffset.Now}");
+                    }
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex} - Error coming from the database, {DateTimeOffset.Now}");
+                throw;
+            }
         }
 
         public async Task<bool> AddMemberToProjectAsync(BTUser? member, int? projectId)
@@ -280,9 +301,23 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task RemoveMembersFromProjectAsync(int? projectId, int? companyId)
+        public async Task RemoveMembersFromProjectAsync(int? projectId, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Project? project = await _context.Projects.Where(p => p.CompanyId == companyId).FirstOrDefaultAsync(p => p.Id == projectId);
+                if (project != null)
+                {
+                    project.Members!.Clear();
+                    _context.Update(project);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task RemoveProjectManagerAsync(int? projectId)

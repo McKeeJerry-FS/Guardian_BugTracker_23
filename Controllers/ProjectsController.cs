@@ -12,6 +12,7 @@ using Guardian_BugTracker_23.Data.Enums;
 using X.PagedList;
 using Microsoft.AspNetCore.Authorization;
 using Guardian_BugTracker_23.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace Guardian_BugTracker_23.Controllers
 {
@@ -22,17 +23,20 @@ namespace Guardian_BugTracker_23.Controllers
         private readonly ILogger<ProjectsController> _logger;
         private readonly IBTProjectService _btProjectService;
         private readonly IBTRolesService _btRolesService;
+        private readonly UserManager<BTUser> _userManager;
 
         public ProjectsController(ApplicationDbContext context,
                                   ILogger<ProjectsController> logger,
                                   IBTProjectService bTProjectService,
-                                  IBTRolesService bTRolesService
+                                  IBTRolesService bTRolesService,
+                                  UserManager<BTUser> userManager
                                   )
         {
             _context = context;
             _logger = logger;
             _btProjectService = bTProjectService;
             _btRolesService = bTRolesService;
+            _userManager = userManager;
         }
 
         // GET: Projects
@@ -206,7 +210,7 @@ namespace Guardian_BugTracker_23.Controllers
         {
             Project? project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
 
-            if(id == null) { return NotFound(); }
+            if (id == null) { return NotFound(); }
 
             //Get the list of project managers for the company
             IEnumerable<BTUser> projectManagers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), _companyId);
@@ -230,9 +234,9 @@ namespace Guardian_BugTracker_23.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignPM(AssignPMViewModel vm)
         {
-            if(!string.IsNullOrEmpty(vm.PMId))
+            if (!string.IsNullOrEmpty(vm.PMId))
             {
-                if(await _btProjectService.AddProjectManagerAsync(vm.PMId, vm.ProjectId))
+                if (await _btProjectService.AddProjectManagerAsync(vm.PMId, vm.ProjectId))
                 {
                     return RedirectToAction(nameof(Details), new { id = vm.ProjectId });
                 }
@@ -247,42 +251,134 @@ namespace Guardian_BugTracker_23.Controllers
             IEnumerable<BTUser> projectManagers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.ProjectManager), _companyId);
             BTUser? currentPM = await _btProjectService.GetProjectManagerAsync(vm.ProjectId);
             vm.PMList = new SelectList(projectManagers, "Id", "Name", currentPM?.Id);
-
+            
             return View(vm);
 
 
         }
 
-        // AssignPM Methods
-        //[HttpGet]
-        //public async Task<IActionResult> AssignProjectMembers(int? id)
-        //{
-        //    Project? project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
+        //AssignPM Methods
+        [HttpGet]
+        public async Task<IActionResult> AssignProjectMembers(int? id)
+        {
+            Project? project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
 
-        //    if (id == null) { return NotFound(); }
+            if (id == null) { return NotFound(); }
 
-        //    //Get the list of project managers for the company
-        //    IEnumerable<BTUser> projectDevelopers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
+            List<BTUser> members = new();
+            //Get the list of project managers for the company
+            IEnumerable<BTUser> projectDevelopers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
+            IEnumerable<BTUser> projectSubmitters = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.Submitter), _companyId);
+            foreach (var projectDeveloper in projectDevelopers)
+            {
+                members.Add(projectDeveloper);
+            }
+            foreach (var projectSubmitter in projectSubmitters)
+            {
+                members.Add(projectSubmitter);
+            }
+            // Get the current PM if on is assigned
+            BTUser? currentPM = await _btProjectService.GetProjectManagerAsync(id);
 
-        //    // Get the current PM if on is assigned
-        //    BTUser? currentPM = await _btProjectService.GetProjectManagerAsync(id);
+            // Instantiate and Initialize the ViewModel
+            AssignMembersVM vm = new()
+            {
+                ProjectId = project.Id,
+                ProjectName = project.Name,
+                MembersList = new MultiSelectList(members, "Id", "FullName", currentPM?.Id),
+                PMId = currentPM?.Id,
+            };
+            ViewData["Members"] = new MultiSelectList(_context.Members, "Id", "Name", vm.PMId);
+            return View(vm);
+        }
 
-        //    // Instantiate and Initialize the ViewModel
-        //    AssignPMViewModel vm = new()
-        //    {
-        //        ProjectId = project.Id,
-        //        ProjectName = project.Name,
-        //        PMList = new SelectList(projectDevelopers, "Id", "FullName", currentPM?.Id),
-        //        PMId = currentPM?.Id,
-        //    };
+        //AssignPM Methods
+        [HttpPost]
+        public async Task<IActionResult> AssignProjectMembers(AssignMembersVM vm, IEnumerable<string> selected)
+        {
+            Project? project = await _btProjectService.GetProjectByIdAsync(vm.ProjectId, _companyId);
 
-        //    return View(vm);
-        //}
+            if(selected != null)
+            {
+                // Remove the current selected members first
+                await _btProjectService.RemoveMembersFromProjectAsync(vm.ProjectId, _companyId);
+                // Add newly selected members
+                await _btProjectService.AddMembersToProjectAsync(selected, vm.ProjectId, _companyId);
 
+                return RedirectToAction(nameof(Details), new { id = vm.ProjectId });
+            }
+            
+
+            ModelState.AddModelError("PMId", "No Project Manager chosen. Please select a PM");
+            List<BTUser> members = new();
+            IEnumerable<BTUser> projectDevelopers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
+            IEnumerable<BTUser> projectSubmitters = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.Submitter), _companyId);
+            foreach (var projectDeveloper in projectDevelopers)
+            {
+                members.Add(projectDeveloper);
+            }
+            foreach (var projectSubmitter in projectSubmitters)
+            {
+                members.Add(projectSubmitter);
+            }
+            BTUser? currentPM = await _btProjectService.GetProjectManagerAsync(vm.ProjectId);
+            vm.MembersList = new MultiSelectList(members, "Id", "Name", currentPM?.Id);
+            ViewData["Members"] = new MultiSelectList(_context.Members, "Id", "Name", vm.PMId);
+
+            return View();
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RemoveAllTeamMembers(int projectId)
+        {
+            Project? project = await _btProjectService.GetProjectByIdAsync(projectId, _companyId);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            List<BTUser> members = new();
+            IEnumerable<BTUser> projectDevelopers = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
+            IEnumerable<BTUser> projectSubmitters = await _btRolesService.GetUsersInRoleAsync(nameof(BTRoles.Submitter), _companyId);
+            foreach (var projectDeveloper in projectDevelopers)
+            {
+                members.Add(projectDeveloper);
+            }
+            foreach (var projectSubmitter in projectSubmitters)
+            {
+                members.Add(projectSubmitter);
+            }
+            BTUser? currentPM = await _btProjectService.GetProjectManagerAsync(projectId);
+            
+            ViewData["Members"] = new MultiSelectList(_context.Members, "Id", "Name", currentPM?.Id);
+
+            return View();
+            
+            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult>RemoveAllTeamMembers(AssignMembersVM vm, IEnumerable<string> selected)
+        {
+            Project? project = await _btProjectService.GetProjectByIdAsync(vm.ProjectId, _companyId);
+
+            if (selected != null)
+            {
+                // Remove the current selected members first
+                await _btProjectService.RemoveMembersFromProjectAsync(vm.ProjectId, _companyId);
+                
+
+                return RedirectToAction(nameof(Details), new { id = vm.ProjectId });
+            }
+            ViewData["Members"] = new MultiSelectList(_context.Members, "Id", "Name", vm.PMId);
+            return RedirectToAction(nameof(Details), new { id = vm.ProjectId });
+        }
 
         private bool ProjectExists(int id)
         {
-          return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
+

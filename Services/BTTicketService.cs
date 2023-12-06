@@ -74,9 +74,21 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task AssignTicketAsync(int? ticketId, string? userId)
+        public async Task AssignTicketAsync(int? ticketId, string? userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Ticket? ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+                if (userId != null)
+                {
+                    
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<List<Ticket>> GetAllTicketsByCompanyIdAsync(int? companyId)
