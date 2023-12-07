@@ -45,15 +45,52 @@ namespace Guardian_BugTracker_23.Controllers
             return View(tickets);
         }
 
+        // Get Method completed and working: Dec. 7, 2023
+        [HttpGet]
         public async Task<IActionResult> AssignTicketDeveloper(int? id)
+        {
+			List<BTUser> members = new();
+            if(id != null)
+            {
+                Ticket ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
+			    //Get the list of developers for the company
+			    IEnumerable<BTUser> projectDevelopers = await _btrolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
+			    foreach (var projectDeveloper in projectDevelopers)
+			    {
+				    members.Add(projectDeveloper);
+			    }
+                BTUser? currentDev = await _btTicketService.GetTicketDeveloperAsync(id, _companyId);
+                AssignTicketVM vm = new()
+                {
+                    Ticket = ticket,
+                    Developers = new SelectList(members, "Id", "FullName"),
+                    DeveloperId = currentDev?.Id
+                };
+                ViewData["Developers"] = new SelectList(members, "Id", "Name");
+                return View(vm);
+            }
+			ViewData["Developers"] = new SelectList(members, "Id", "Name");
+			return View();
+
+		}
+
+
+        [HttpPost]
+        public async Task<IActionResult> AssignTicketDeveloper(int? id, string? developerId)
         {
             // Get Ticket info
             Ticket? ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
-            // Get a list of Developers
-            List<BTUser> devs = await _btrolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
+            // Check if the developer exists
+            if(developerId != null)
+            {
+                await _btTicketService.AssignTicketAsync(ticket.Id, developerId);
+                return RedirectToAction(nameof(Details), "Tickets", new { id = ticket.Id });
+            }
+
+            
 
             // Add the developer
-
+            
             // Return to the Details View
 
             return View();                                                                                                                                        

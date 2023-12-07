@@ -139,8 +139,8 @@ namespace Guardian_BugTracker_23.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
-            }
+				return RedirectToAction("Details", "Tickets", new { Id = ticketComment.TicketId });
+			}
             ViewData["TicketId"] = new SelectList(_context.Tickets, "Id", "Description", ticketComment.TicketId);
             ViewData["UserId"] = new SelectList(_context.BTUsers, "Id", "Id", ticketComment.UserId);
             return View(ticketComment);

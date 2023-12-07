@@ -1,4 +1,5 @@
 ﻿using Guardian_BugTracker_23.Data;
+using Guardian_BugTracker_23.Data.Enums;
 using Guardian_BugTracker_23.Models;
 using Guardian_BugTracker_23.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -15,16 +16,19 @@ namespace Guardian_BugTracker_23.Services
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTRolesService _rolesService;
+        private readonly IBTProjectService _projectService;
 
         public BTTicketService(ApplicationDbContext context,
                                 ILogger<BTTicketService> logger,
                                 UserManager<BTUser> userManager,
-                                IBTRolesService bTRolesService)
+                                IBTRolesService bTRolesService,
+                                IBTProjectService bTProjectService)
         {
             _context = context;
             _logger = logger;
             _userManager = userManager;
             _rolesService = bTRolesService;
+            _projectService = bTProjectService;
         }
 
         public async Task AddTicketAsync(Ticket? ticket)
@@ -188,9 +192,17 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task<BTUser?> GetTicketDeveloperAsync(int? ticketId, int? companyId)
+        public async Task<BTUser?> GetTicketDeveloperAsync(int? ticketId, int? companyId)
         {
-            throw new NotImplementedException();
+            if(ticketId != null && companyId != null)
+            {
+                Ticket? ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+                if(ticket!.DeveloperUser != null)
+                {
+                    return ticket.DeveloperUser;
+                }
+            }
+            return null;
         }
 
         public Task<IEnumerable<TicketPriority>> GetTicketPrioritiesAsync()
@@ -198,10 +210,10 @@ namespace Guardian_BugTracker_23.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Ticket>> GetTicketsByUserIdAsync(string? userId, int? companyId)
+        public async Task<List<Ticket>> GetTicketsByUserIdAsync(string? userId, int? companyId)
         {
-            throw new NotImplementedException();
-        }
+			throw new NotImplementedException();
+		}
 
         public Task<IEnumerable<TicketStatus>> GetTicketStatusesAsync()
         {

@@ -4,15 +4,15 @@
     <h2>Assign Developer for</h2>
     <div class="row">
         <div class="col-md-6">
-            <h3> @Model.Ticket!.Title</h3>
-            <a style="font-size:small" asp-action="Details" asp-controller="Projects" asp-route-id="@Model.Ticket.ProjectId">@Model.Ticket.Project!.Name</a>
+            <h3> @Model.Ticket.Title</h3>
+            <a style="font-size:small" asp-action="Details" asp-controller="Tickets" asp-route-id="@Model.Ticket.Id!" name="TicketId">@Model.Ticket.Project!.Name</a>
             <div class="card">
                 <div class="card-header">
                     <label class="control-label">Assign Developer</label>
                 </div>
                 <div class="card-body">
-                    <form method="post" asp-action="AssignDeveloper" asp-controller="Tickets">
-                        <input asp-for="Ticket!.Id" hidden />
+                    <form method="post" asp-action="AssignTicketDeveloper" asp-controller="Tickets">
+                        <input type="hidden" asp-for="Ticket!.Id" />
                         <p>Description:  @Model.Ticket.Description</p>
                         <div class="form-group">
                             <label class="col-form-label">Select Developers</label>
@@ -21,7 +21,7 @@
                             </select>
                         </div>
                         <div class="form-group mt-3">
-                            <input type="submit" value="Assign" class="btn btn-primary" />
+                            <input type="submit" class="btn btn-primary" />
                         </div>
                     </form>
                 </div>

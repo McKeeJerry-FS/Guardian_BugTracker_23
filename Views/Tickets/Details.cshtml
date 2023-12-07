@@ -64,12 +64,11 @@
 
 									@if (User.IsInRole("Admin"))
 									{
-										<a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Add Team Members</a>
-										<a class="btn btn-primary alert-primary" style="font:small" asp-action="RemoveAllTeamMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Remove All Team Members</a>
+										<a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignTicketDeveloper" asp-controller="Tickets" asp-route-id="@Model.Id">Add Team Members</a>
 									}
 									else if (User.IsInRole("ProjectManager"))
 									{
-										<a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignProjectMembers" asp-controller="Projects" asp-route-id="@Model.Id" name="UserIds">Add Team Members</a>
+										<a class="btn btn-primary alert-primary" style="font:small" asp-action="AssignTicketDeveloper" asp-controller="Tickets" asp-route-id="@Model.Id">Add Team Members</a>
 									}
 									
 									<h5>Developer Assigned: @Model.DeveloperUser?.FullName</h5>

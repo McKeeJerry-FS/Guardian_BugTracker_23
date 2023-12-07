@@ -257,7 +257,7 @@ namespace Guardian_BugTracker_23.Controllers
 
         }
 
-        //AssignPM Methods
+        //Assign project member Methods
         [HttpGet]
         public async Task<IActionResult> AssignProjectMembers(int? id)
         {
