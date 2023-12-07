@@ -104,7 +104,7 @@ namespace Guardian_BugTracker_23.Controllers
                     project.CompanyId = _companyId;
                     project.Created = DateTimeOffset.Now;
                     await _btProjectService.AddProjectAsync(project);
-                    await _context.SaveChangesAsync();
+                   
                     _logger.LogInformation($"Project was successfully created: {DateTimeOffset.Now: MM dd, yyyy - HH:mm}");
                     return RedirectToAction(nameof(Index));
                 }

@@ -112,13 +112,18 @@ namespace Guardian_BugTracker_23.Controllers
         }
 
         // GET: Tickets/Create
-        public IActionResult Create()
+        public IActionResult Create(int? projectId)
         {
+            Ticket ticket = new()
+            {
+                ProjectId = projectId ?? 0
+            };
+
             ViewData["TicketPriority"] = new SelectList(_context.TicketPriorities, "Id", "Name");
             ViewData["TicketStatus"] = new SelectList(_context.TicketStatuses, "Id", "Name");
             ViewData["TicketType"] = new SelectList(_context.TicketTypes, "Id", "Name");
             ViewData["DeveloperUserId"] = new SelectList(_context.BTUsers, "Id", "Id");
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name");
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name", projectId);
             ViewData["SubmitterUserId"] = new SelectList(_context.BTUsers, "Id", "Id");
             return View();
         }
@@ -128,12 +133,19 @@ namespace Guardian_BugTracker_23.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Created,Updated,Archived,ArchivedByProject,TicketType,TicketStatus,TicketPriority,ProjectId,DeveloperUserId,SubmitterUserId")] Ticket ticket)
+        public async Task<IActionResult> Create([Bind("Title,Description,TicketType,TicketStatus,TicketPriority,ProjectId,DeveloperUserId,SubmitterUserId")] Ticket ticket)
         {
-            if (ModelState.IsValid)
+            if(ticket != null)
             {
-                await _btTicketService.AddTicketAsync(ticket);
-                return RedirectToAction(nameof(Index));
+
+                
+                if (ModelState.IsValid)
+                {
+                    
+                    ticket.Created = DateTimeOffset.Now;
+                    await _btTicketService.AddTicketAsync(ticket);
+                    return RedirectToAction(nameof(Index));
+                }
             }
             
             ViewData["TicketPriority"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriority);
@@ -148,9 +160,10 @@ namespace Guardian_BugTracker_23.Controllers
         // GET: Tickets/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-
+           
 
             var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
+            
             if (ticket == null)
             {
                 return NotFound();

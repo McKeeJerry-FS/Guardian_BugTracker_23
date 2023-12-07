@@ -178,7 +178,10 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="m-2 d-flex align-content-end justify-content-end ">
+                                <div class="col m-2 d-flex align-content-start justify-content-start ">
+                                    <a asp-action="Create" asp-controller="Tickets" asp-route-id="@Model.Id" class="btn btn-primary">Add New Ticket</a>
+                                </div>
+                                <div class="col m-2 d-flex align-content-end justify-content-end ">
                                     <label class="m-1">Search</label>
                                     <input type="search"/>
                                 </div>
