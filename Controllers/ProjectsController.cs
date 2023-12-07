@@ -13,6 +13,7 @@ using X.PagedList;
 using Microsoft.AspNetCore.Authorization;
 using Guardian_BugTracker_23.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using System.Runtime.InteropServices;
 
 namespace Guardian_BugTracker_23.Controllers
 {
@@ -92,16 +93,23 @@ namespace Guardian_BugTracker_23.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,CompanyId,Description,Created,StartDate,EndDate,ProjectPriority,ImageFileData,ImageFileType,Archived")] Project project)
+        public async Task<IActionResult> Create([Bind("Name,Description,StartDate,EndDate,ProjectPriority,ImageFileName,Archived")] Project project)
         {
-            if (ModelState.IsValid)
+            if (project != null)
             {
-                _context.Add(project);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation($"Project was successfully created: {DateTimeOffset.Now: MM dd, yyyy - HH:mm}");
-                return RedirectToAction(nameof(Index));
+
+                ModelState.Remove(project.CompanyId.ToString());
+                if (ModelState.IsValid)
+                {
+                    project.CompanyId = _companyId;
+                    project.Created = DateTimeOffset.Now;
+                    await _btProjectService.AddProjectAsync(project);
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation($"Project was successfully created: {DateTimeOffset.Now: MM dd, yyyy - HH:mm}");
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project.ProjectPriority);
+            ViewData["ProjectPriority"] = new SelectList(_context.ProjectPriorities, "Id", "Name", project!.ProjectPriority);
             ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", _companyId);
             return View(project);
         }
@@ -141,9 +149,9 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 try
                 {
-                    _context.Update(project);
+                    await _btProjectService.UpdateProjectAsync(project);
                     _logger.LogInformation($"Project was successfully updated: {DateTimeOffset.Now.ToUniversalTime()}");
-                    await _context.SaveChangesAsync();
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -172,10 +180,8 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 return NotFound();
             }
-
-            var project = await _context.Projects
-                .Include(p => p.Company)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Project? project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
+            
             if (project == null)
             {
                 return NotFound();
@@ -189,14 +195,14 @@ namespace Guardian_BugTracker_23.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Projects == null)
+            if (await _btProjectService.GetProjectByIdAsync(id, _companyId) == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
             }
-            var project = await _context.Projects.FindAsync(id);
+            var project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
             if (project != null)
             {
-                _context.Projects.Remove(project);
+                await _btProjectService.ArchiveProjectAsync(project, _companyId);
             }
 
             await _context.SaveChangesAsync();
@@ -375,7 +381,45 @@ namespace Guardian_BugTracker_23.Controllers
             return RedirectToAction(nameof(Details), new { id = vm.ProjectId });
         }
 
-        private bool ProjectExists(int id)
+        [HttpGet]
+        public async Task<IActionResult> Restore(int? id)
+        {
+			if (id == null || _context.Projects == null)
+			{
+				return NotFound();
+			}
+			Project? project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
+
+			if (project == null)
+			{
+				return NotFound();
+			}
+
+			return View(project);
+		}
+
+
+		[HttpPost, ActionName("Restore")]
+        [ValidateAntiForgeryToken]
+		public async Task<IActionResult> RestoreConfirmed(int? id)
+		{
+			if (await _btProjectService.GetProjectByIdAsync(id, _companyId) == null)
+			{
+				return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
+			}
+			var project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
+			if (project != null)
+			{
+				await _btProjectService.RestoreProjectAsync(project, _companyId);
+			}
+
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
+
+
+
+		private bool ProjectExists(int id)
         {
             return (_context.Projects?.Any(e => e.Id == id)).GetValueOrDefault();
         }

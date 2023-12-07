@@ -21,9 +21,22 @@ namespace Guardian_BugTracker_23.Services
         
 
 
-        public Task<Company> GetCompanyInfoAsync(int? companyId)
+        public async Task<Company> GetCompanyInfoAsync(int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if(companyId != null)
+                {
+                    Company? company =  await _context.Companies.FirstOrDefaultAsync(c => c.Id == companyId);
+                    return company!;
+                }
+                return null!;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task<List<Invite>> GetInvitesAsync(int? companyId)

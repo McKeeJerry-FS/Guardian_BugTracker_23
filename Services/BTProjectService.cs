@@ -83,9 +83,21 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task AddProjectAsync(Project project)
+        public async Task AddProjectAsync(Project project)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (project != null)
+                {
+                    _context.Projects.Add(project);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<bool> AddProjectManagerAsync(string? userId, int? projectId)
@@ -124,11 +136,15 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task ArchiveProjectAsync(Project? project, int? companyId)
+        public async Task ArchiveProjectAsync(Project? project, int? companyId)
         {
             try
             {
-                throw new NotImplementedException();
+                if (project != null)
+                {
+                    project.Archived = true;
+                    await UpdateProjectAsync(project);
+                }
             }
             catch (Exception ex)
             {
@@ -347,14 +363,38 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task RestoreProjectAsync(Project? project, int? companyId)
+        public async Task RestoreProjectAsync(Project? project, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (project != null && companyId != null)
+                {
+                    project.Archived = false;
+                    await UpdateProjectAsync(project);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
-        public Task UpdateProjectAsync(Project? project)
+        public async Task UpdateProjectAsync(Project? project)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (project != null)
+                {
+                    _context.Update(project);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
