@@ -1,0 +1,134 @@
+﻿<style >
+body {
+    font-family: 'Roboto', sans-serif;
+    padding-left: 30px;
+}
+
+.doc-header {
+    background: #8a70b3;
+    padding: 35px 50px;
+}
+
+    .doc-header h1 {
+        font-size: 40px;
+        font-weight: 500;
+        color: #eee;
+        margin: 0;
+    }
+
+    .doc-header p {
+        color: #eee;
+        margin: 0;
+        margin-top: 15px;
+    }
+
+.table-of-contents {
+    padding-top: 30px;
+    padding-left: 30px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    width: 300px;
+    overflow: auto;
+    background: #eeeeee;
+    display: block;
+}
+
+    .table-of-contents p {
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    .table-of-contents nav.nav {
+        display: none;
+    }
+
+    .table-of-contents a.nav-link {
+        font-size: 14px;
+        padding: 8px 0;
+        color: black;
+    }
+
+        .table-of-contents a.nav-link.active {
+            background: none !important;
+            color: #8742f5;
+            font-weight: 600;
+        }
+
+            .table-of-contents a.nav-link.active + nav.nav {
+                display: block !important;
+            }
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    font-weight: 300;
+    color: #555;
+}
+
+h3, h4, h5, h6 {
+    margin-top: 40px;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.doc-content {
+    padding: 50px;
+    line-height: 25px;
+    color: #666
+}
+
+    .doc-content a:hover, .doc-content a:focus {
+        color: #007bff;
+    }
+
+        .doc-content a:hover h1, .doc-content a:hover h2, .doc-content a:hover h3, .doc-content a:hover h4, .doc-content a:hover h5, .doc-content a:hover h6 {
+            color: #007bff;
+        }
+
+    .doc-content pre {
+        padding: 0;
+        border: none;
+        font-size: 14px;
+        margin: 20px 0;
+        border-radius: 5px;
+        max-height: 500px;
+    }
+
+code {
+    padding: 2px 6px;
+    color: #b5022f;
+    background-color: #ffecf2;
+}
+
+.doc-content pre code {
+    padding: 20px 30px !important;
+}
+
+.doc-content h2 {
+    margin-bottom: 20px;
+}
+
+.doc-content h4 {
+    font-size: 20px
+}
+
+.doc-content .alert {
+    margin: 0 !important;
+    margin-bottom: 20px !important;
+}
+
+.doc-content img {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+.doc-content a:hover, .doc-content p + a:focus {
+    text-decoration: none;
+}
+
+.doc-content p + a > h2 {
+    margin-top: 40px;
+}
+
+</style >
