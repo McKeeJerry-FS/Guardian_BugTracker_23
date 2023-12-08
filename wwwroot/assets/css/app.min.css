@@ -612,9 +612,9 @@ body {
     overflow: hidden;
 }
 
-body.no-scroll {
+/*body.no-scroll {
   overflow: hidden !important;
-}
+}*/
 
 * {
   min-width: 0;

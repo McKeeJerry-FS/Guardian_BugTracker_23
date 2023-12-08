@@ -183,43 +183,18 @@
                                 </div>
                                 <div class="col m-2 d-flex align-content-end justify-content-end ">
                                     <label class="m-1">Search</label>
-                                    <input type="search"/>
+                                    <input type="search" />
                                 </div>
                             </div>
-                            <div class="table-responsive" style="overflow-y:auto;height:600px;">
-                                <table class="table table-hover">
-                                    <thead class="border border-2 border-dark sticky-top">
-                                        <tr class="bg-dark text-light">
-                                            @* Table header *@
-                                            <th>Title</th>
-                                            <th>Created</th>
-                                            <th>Updated</th>
-                                            <th>Archived</th>
-                                            <th>Type</th>
-                                            <th>Status</th>
-                                            <th>Priority</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                            @* Table body *@
-                                            @*foreach statement for each ticket in tickets*@
-                                            @* TODO: Add a service method for getting all tickets by project id = COMPLETED!*@
-                                            @foreach (var ticket in (await _btTicketService.GetAllTicketsByProjectIdAsync(Model.Id)))
-                                            {
-                                                <a asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">
-                                                    <tr>
-                                                        <td>@ticket.Title</td>
-                                                        <td>@ticket.Created.ToString("MMM dd, yyyy - HH:mm")</td>
-                                                        <td>@ticket.Updated</td>
-                                                        <td>@ticket.Archived</td>
-                                                        <td>@ticket.TicketType</td>
-                                                        <td>@ticket.TicketStatus</td>
-                                                        <td>@ticket.TicketPriority</td>
-                                                    </tr>
-                                                </a>
-                                            }
-                                    </tbody>
-                                </table>
+
+
+                            <div class="">
+                                <div class="card-body">
+                                    <h6 class="card-title">Ticket Index</h6>
+                                    <div>
+                                        <partial name="_TicketTablePartial" />
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -227,81 +202,26 @@
 
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
 
 
 
-@* <h1>Details</h1>
 
-<div>
-    <h4>Project</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Created)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Created)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProjectPriority)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProjectPriority)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileData)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileData)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Archived)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Archived)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Company)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Company.Name)
-        </dd>
-    </dl>
-</div> *@
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section scripts{
+    <script>
+        $(document).ready(function (){
+            $('#ticketTable').DataTable({
+                "scrollY": "400px",
+                "scrollCollapse": true
+            });
+        });
+    </script>
+}
