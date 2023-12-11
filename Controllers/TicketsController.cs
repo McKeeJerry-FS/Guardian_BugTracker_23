@@ -144,7 +144,7 @@ namespace Guardian_BugTracker_23.Controllers
                     
                     ticket.Created = DateTimeOffset.Now;
                     await _btTicketService.AddTicketAsync(ticket);
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Details), "Projects", new {id = ticket.ProjectId});
                 }
             }
             
