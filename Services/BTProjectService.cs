@@ -184,7 +184,23 @@ namespace Guardian_BugTracker_23.Services
            
         }
 
-        public Task<List<Project>> GetArchivedProjectsByCompanyIdAsync(int? companyId)
+		public async Task<List<Project>> GetAllProjectsByPriorityAsync(int? companyId, string priority)
+		{
+            try
+            {
+                List<Project> projects = await _context.Projects.Where(p => p.CompanyId == companyId)
+                                        .ToListAsync();
+
+                return projects;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+		}
+
+		public Task<List<Project>> GetArchivedProjectsByCompanyIdAsync(int? companyId)
         {
             throw new NotImplementedException();
         }
@@ -263,10 +279,36 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task<List<BTUser>> GetProjectMembersByRoleAsync(int? projectId, string? roleName, int? companyId)
+        public async Task<List<BTUser>> GetProjectMembersByRoleAsync(int? projectId, string? roleName, int? companyId)
         {
-            throw new NotImplementedException();
-        }
+			try
+			{
+                List<BTUser> members = new();
+				Project? project = await _context.Projects.Include(p => p.Members).FirstOrDefaultAsync(p => p.Id == projectId);
+				if (project != null)
+				{
+					foreach (BTUser member in project.Members)
+					{
+						if (await _bTRolesService.IsUserInRoleAsync(member, nameof(BTRoles.Developer)) ||
+							await _bTRolesService.IsUserInRoleAsync(member, nameof(BTRoles.Submitter)) ||
+							await _bTRolesService.IsUserInRoleAsync(member, nameof(BTRoles.DemoUser)) ||
+							await _bTRolesService.IsUserInRoleAsync(member, nameof(BTRoles.Admin)))
+						{
+							members.Add(member);
+
+						}
+					}
+                    return members;
+				}
+				return null;
+
+			}
+			catch (Exception)
+			{
+
+				throw;
+			}
+		}
 
         public async Task<IEnumerable<ProjectPriority>> GetProjectPrioritiesAsync()
         {

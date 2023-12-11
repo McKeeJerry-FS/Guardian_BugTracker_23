@@ -11,7 +11,9 @@ namespace Guardian_BugTracker_23.Services.Interfaces
         public Task<bool> AddProjectManagerAsync(string? userId, int? projectId);
         public Task ArchiveProjectAsync(Project? project, int? companyId);
         public Task<List<Project>> GetAllProjectsByCompanyIdAsync(int? companyId);
-        public Task<List<Project>> GetArchivedProjectsByCompanyIdAsync(int? companyId);
+        public Task<List<Project>> GetAllProjectsByPriorityAsync(int? companyId, string? priority);
+
+		public Task<List<Project>> GetArchivedProjectsByCompanyIdAsync(int? companyId);
         // Testing connection to DB
         public Task<List<Project>> GetAllProjectsASync();
         public Task<Project> GetProjectByIdAsync(int? projectId, int? companyId);

@@ -70,9 +70,20 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task<List<Project>> GetProjectsAsync(int? companyId)
+        public async Task<List<Project>> GetProjectsAsync(int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _context.Projects.Where(p => p.CompanyId == companyId)
+                                              .Include(p => p.Tickets)
+                                              .Include(p => p.Members)
+                                              .ToListAsync();     
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

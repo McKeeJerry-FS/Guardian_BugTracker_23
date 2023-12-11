@@ -14,6 +14,7 @@ using Guardian_BugTracker_23.Services;
 using Microsoft.AspNetCore.Identity;
 using Guardian_BugTracker_23.Services.Interfaces;
 using Guardian_BugTracker_23.Data.Enums;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Guardian_BugTracker_23.Controllers
 {
@@ -50,7 +51,8 @@ namespace Guardian_BugTracker_23.Controllers
 
         // Get Method completed and working: Dec. 7, 2023
         [HttpGet]
-        public async Task<IActionResult> AssignTicketDeveloper(int? id)
+		[Authorize(Roles = "Admin, ProjectManager")]
+		public async Task<IActionResult> AssignTicketDeveloper(int? id)
         {
 			List<BTUser> members = new();
             if(id != null)
@@ -86,7 +88,8 @@ namespace Guardian_BugTracker_23.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> AssignTicketDeveloper(int? id, string? developerId)
+		[Authorize(Roles = "Admin, ProjectManager")]
+		public async Task<IActionResult> AssignTicketDeveloper(int? id, string? developerId)
         {
             // Get Ticket info
             Ticket? ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
@@ -122,6 +125,7 @@ namespace Guardian_BugTracker_23.Controllers
         }
 
         // GET: Tickets/Create
+        [Authorize(Roles = "Admin, ProjectManager")]
         public IActionResult Create(int? projectId)
         {
             Ticket ticket = new()
@@ -171,8 +175,9 @@ namespace Guardian_BugTracker_23.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+		// GET: Tickets/Edit/5
+		[Authorize(Roles = "Admin, ProjectManager")]
+		public async Task<IActionResult> Edit(int? id)
         {
            
 
@@ -237,8 +242,9 @@ namespace Guardian_BugTracker_23.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+		// GET: Tickets/Delete/5
+		[Authorize(Roles = "Admin, ProjectManager")]
+		public async Task<IActionResult> Delete(int? id)
         {
 
             var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
@@ -297,7 +303,7 @@ namespace Guardian_BugTracker_23.Controllers
 		public async Task<IActionResult> ShowFile(int id)
 		{
 			TicketAttachment ticketAttachment = await _btTicketService.GetTicketAttachmentByIdAsync(id);
-			string fileName = ticketAttachment.FileName!;
+			string fileName = ticketAttachment!.FileName!;
 			byte[] fileData = ticketAttachment.FileData!;
 			string ext = Path.GetExtension(fileName)!.Replace(".", "");
 
@@ -306,7 +312,8 @@ namespace Guardian_BugTracker_23.Controllers
 		}
 
         [HttpGet]
-        public async Task<IActionResult> Restore(int? id)
+		[Authorize(Roles = "Admin, ProjectManager")]
+		public async Task<IActionResult> Restore(int? id)
         {
 			
             var ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
