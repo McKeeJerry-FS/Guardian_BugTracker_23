@@ -153,9 +153,23 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task<Ticket> GetTicketAsNoTrackingAsync(int? ticketId, int? companyId)
+        public async Task<Ticket> GetTicketAsNoTrackingAsync(int? ticketId, int? companyId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _context.Tickets.Include(t => t.DeveloperUser)
+                                                .Include(t => t.Project)
+                                                .Include(t => t.SubmitterUser)
+                                                .Include(t => t.Attachments)
+                                                .Include(t => t.Comments)
+                                                .AsNoTracking()
+                                                .FirstOrDefaultAsync(m => m.Id == ticketId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<TicketAttachment?> GetTicketAttachmentByIdAsync(int? ticketAttachmentId)

@@ -23,18 +23,21 @@ namespace Guardian_BugTracker_23.Controllers
         private readonly IBTFileService _bTFileService;
         private readonly IBTTicketService _btTicketService;
         private readonly IBTRolesService _btrolesService;
+        private readonly IBTTicketHistoryService _btTicketHistoryService;
         private readonly UserManager<BTUser> _userManager;
 
         public TicketsController(ApplicationDbContext context,
                                  IBTFileService bTFileService,
                                  IBTTicketService bTTicketService,
                                  UserManager<BTUser> userManager,
-                                 IBTRolesService bTRolesService)
+                                 IBTRolesService bTRolesService,
+                                 IBTTicketHistoryService bTTicketHistoryService)
         {
             _context = context;
             _bTFileService = bTFileService;
             _btTicketService = bTTicketService;
             _btrolesService = bTRolesService;
+            _btTicketHistoryService = bTTicketHistoryService;
             _userManager = userManager;
         }
 
@@ -52,6 +55,9 @@ namespace Guardian_BugTracker_23.Controllers
 			List<BTUser> members = new();
             if(id != null)
             {
+                string? userId = _userManager.GetUserId(User);
+                Ticket? oldTicket = await _btTicketService.GetTicketAsNoTrackingAsync(id, _companyId);
+
                 Ticket ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
 			    //Get the list of developers for the company
 			    IEnumerable<BTUser> projectDevelopers = await _btrolesService.GetUsersInRoleAsync(nameof(BTRoles.Developer), _companyId);
@@ -66,6 +72,10 @@ namespace Guardian_BugTracker_23.Controllers
                     Developers = new SelectList(members, "Id", "FullName"),
                     DeveloperId = currentDev?.Id
                 };
+
+                Ticket? newTicket = await _btTicketService.GetTicketAsNoTrackingAsync(id, _companyId);
+                await _btTicketHistoryService.AddHistoryAsync(oldTicket, newTicket, userId);
+
                 ViewData["Developers"] = new SelectList(members, "Id", "Name");
                 return View(vm);
             }
@@ -144,11 +154,15 @@ namespace Guardian_BugTracker_23.Controllers
                     
                     ticket.Created = DateTimeOffset.Now;
                     await _btTicketService.AddTicketAsync(ticket);
+                    // Add History record
+                    Ticket newTicket = await _btTicketService.GetTicketAsNoTrackingAsync(ticket.Id, _companyId);
+
+                    await _btTicketHistoryService.AddHistoryAsync(null!, newTicket, _userId);
                     return RedirectToAction(nameof(Details), "Projects", new {id = ticket.ProjectId});
                 }
             }
             
-            ViewData["TicketPriority"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket.TicketPriority);
+            ViewData["TicketPriority"] = new SelectList(_context.TicketPriorities, "Id", "Name", ticket!.TicketPriority);
             ViewData["TicketStatus"] = new SelectList(_context.TicketStatuses, "Id", "Name", ticket.TicketStatus);
             ViewData["TicketType"] = new SelectList(_context.TicketTypes, "Id", "Name", ticket.TicketType);
             ViewData["DeveloperUserId"] = new SelectList(_context.BTUsers, "Id", "Id", ticket.DeveloperUserId);
@@ -193,7 +207,13 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 try
                 {
+                    string? userId = _userManager.GetUserId(User);
+                    Ticket? oldTicket = await _btTicketService.GetTicketAsNoTrackingAsync(ticket.Id, _companyId);
+
                     await _btTicketService.UpdateTicketAsync(ticket);
+
+                    Ticket? newTicket = await _btTicketService.GetTicketAsNoTrackingAsync(ticket.Id, _companyId);
+                    await _btTicketHistoryService.AddHistoryAsync(oldTicket, newTicket, userId);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
