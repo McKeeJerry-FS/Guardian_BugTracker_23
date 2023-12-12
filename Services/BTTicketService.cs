@@ -123,6 +123,7 @@ namespace Guardian_BugTracker_23.Services
                                                                    .Include(t => t.DeveloperUser)
                                                                    .Include(t => t.Project)
                                                                    .Include(t => t.SubmitterUser)
+                                                                   .Include(t => t.History)
                                                                    .AsNoTracking()
                                                                    .ToListAsync();
                 return result.ToList();
@@ -142,7 +143,8 @@ namespace Guardian_BugTracker_23.Services
                                                                    .Include(t => t.DeveloperUser)
                                                                    .Include(t => t.Project)
                                                                    .Include(t => t.SubmitterUser)
-                                                                   .AsNoTracking()
+																   .Include(t => t.History)
+																   .AsNoTracking()
                                                                    .ToListAsync();
                 return result.ToList();
             }
@@ -162,7 +164,8 @@ namespace Guardian_BugTracker_23.Services
                                                 .Include(t => t.SubmitterUser)
                                                 .Include(t => t.Attachments)
                                                 .Include(t => t.Comments)
-                                                .AsNoTracking()
+												.Include(t => t.History)
+												.AsNoTracking()
                                                 .FirstOrDefaultAsync(m => m.Id == ticketId);
             }
             catch (Exception)
@@ -197,7 +200,8 @@ namespace Guardian_BugTracker_23.Services
                                                 .Include(t => t.SubmitterUser)
                                                 .Include(t => t.Attachments)
                                                 .Include(t => t.Comments)
-                                                .FirstOrDefaultAsync(m => m.Id == ticketId);
+												.Include(t => t.History)
+												.FirstOrDefaultAsync(m => m.Id == ticketId);
             }
             catch (Exception ex)
             {

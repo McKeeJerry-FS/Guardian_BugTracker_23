@@ -25,6 +25,7 @@ namespace Guardian_BugTracker_23.Controllers
         private readonly IBTTicketService _btTicketService;
         private readonly IBTRolesService _btrolesService;
         private readonly IBTTicketHistoryService _btTicketHistoryService;
+        private readonly IBTNotificationService _btNotificationService;
         private readonly UserManager<BTUser> _userManager;
 
         public TicketsController(ApplicationDbContext context,
@@ -32,13 +33,15 @@ namespace Guardian_BugTracker_23.Controllers
                                  IBTTicketService bTTicketService,
                                  UserManager<BTUser> userManager,
                                  IBTRolesService bTRolesService,
-                                 IBTTicketHistoryService bTTicketHistoryService)
+                                 IBTTicketHistoryService bTTicketHistoryService,
+                                 IBTNotificationService bTNotificationService)
         {
             _context = context;
             _bTFileService = bTFileService;
             _btTicketService = bTTicketService;
             _btrolesService = bTRolesService;
             _btTicketHistoryService = bTTicketHistoryService;
+            _btNotificationService = bTNotificationService;
             _userManager = userManager;
         }
 
@@ -91,13 +94,15 @@ namespace Guardian_BugTracker_23.Controllers
 		[Authorize(Roles = "Admin, ProjectManager")]
 		public async Task<IActionResult> AssignTicketDeveloper(int? id, string? developerId)
         {
+            string? currentUser = _userManager.GetUserId(User);
             // Get Ticket info
             Ticket? ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
             // Check if the developer exists
             if(developerId != null)
             {
                 await _btTicketService.AssignTicketAsync(ticket.Id, developerId);
-                return RedirectToAction(nameof(Details), "Tickets", new { id = ticket.Id });
+                await _btNotificationService.NewDeveloperNotificationAsync(ticket?.Id, developerId, currentUser);
+                return RedirectToAction(nameof(Details), "Tickets", new { id = ticket?.Id });
             }
 
             
@@ -152,16 +157,19 @@ namespace Guardian_BugTracker_23.Controllers
             if(ticket != null)
             {
 
+                string? currentUser = _userManager.GetUserId(User);
+                ModelState.Remove("SubmitterUserId");
                 
                 if (ModelState.IsValid)
                 {
-                    
+                    ticket.SubmitterUserId = currentUser;
                     ticket.Created = DateTimeOffset.Now;
                     await _btTicketService.AddTicketAsync(ticket);
                     // Add History record
                     Ticket newTicket = await _btTicketService.GetTicketAsNoTrackingAsync(ticket.Id, _companyId);
 
                     await _btTicketHistoryService.AddHistoryAsync(null!, newTicket, _userId);
+                    await _btNotificationService.NewTicketNotificationAsync(ticket.Id, currentUser);
                     return RedirectToAction(nameof(Details), "Projects", new {id = ticket.ProjectId});
                 }
             }

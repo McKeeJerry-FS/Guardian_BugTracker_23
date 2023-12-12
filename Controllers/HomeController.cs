@@ -50,6 +50,16 @@ namespace Guardian_BugTracker_23.Controllers
             return View();
         }
 
+		public IActionResult Landing()
+		{
+			return View();
+		}
+
+		public IActionResult About()
+		{
+			return View();
+		}
+
 		[HttpPost]
 		public async Task<JsonResult> AmCharts()
 		
