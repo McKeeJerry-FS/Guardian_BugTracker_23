@@ -1,6 +1,7 @@
 ﻿@model Guardian_BugTracker_23.Models.Project
 @using Guardian_BugTracker_23.Services.Interfaces
 @inject IBTFileService _fileService
+@inject IImageService _imageService
 
 @{
     ViewData["Title"] = "Create";
@@ -13,14 +14,12 @@
                 <div class="card w-100">
                     <div class="card-header w-100">
                         <h1>Create</h1>
-
                         <h4>Create a new project</h4>
                     </div>
                     <div class="card-body w-100">
-
                         <div class="row">
-                        <div class="col-md-4">
-                            <form asp-action="Create" asp-controller="Projects" method="post">
+                        <div class="col">
+                            <form asp-action="Create" asp-controller="Projects" method="post" enctype="multipart/form-data">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>           
                                 <input type="hidden" asp-for="CompanyId" />
                                 <div class="form-group">
@@ -54,10 +53,10 @@
                                     <span asp-validation-for="ProjectPriority" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="ImageFormFile" class="control-label">Blog Post Image</label>
-                                    <img class="img-fluid border rounded-3 mb-2 border border-1 border-secondary" style="max-height: 350px;" src="@_fileService.ConvertByteArrayToFile(Model?.ImageFileData!, Model?.ImageFileType!, DefaultImage.ProjectImage)" id="projectImage">
+                                    <label asp-for="ImageFormFile" class="control-label">Project Image</label>
+                                    <img class="img-fluid border rounded-3 mb-2 border border-1 border-secondary" style="max-height: 350px;" src="@_imageService.ConvertByteArrayToFile(Model?.ImageFileData!, Model?.ImageFileType!, DefaultImage.ProjectImage)" id="projectImage">
                                     <input asp-for="ImageFormFile" type="file" class="form-control mt-3 pt-2 border border-1 border-secondary" accept=".png,.jpg,.jpeg,.gif"
-                                           onchange="document.getElementById('blogImage').src = window.URL.createObjectURL(this.files[0])" />
+                                           onchange="document.getElementById('projectImage').src = window.URL.createObjectURL(this.files[0])" />
                                 </div>
                                 <div class="form-group form-check">
                                     <label class="form-check-label">
@@ -73,7 +72,6 @@
                     </div>
                     </div>
                     <div class="card-footer w-100">
-
                         <div>
                             <a asp-action="Index">Back to List</a>
                         </div>

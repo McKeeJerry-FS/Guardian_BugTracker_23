@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Guardian_BugTracker_23.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Runtime.InteropServices;
+using Guardian_BugTracker_23.Services;
 
 namespace Guardian_BugTracker_23.Controllers
 {
@@ -24,13 +25,17 @@ namespace Guardian_BugTracker_23.Controllers
         private readonly ILogger<ProjectsController> _logger;
         private readonly IBTProjectService _btProjectService;
         private readonly IBTRolesService _btRolesService;
+        private readonly IBTFileService _btFileService;
+        private readonly IImageService _imageService;
         private readonly UserManager<BTUser> _userManager;
 
         public ProjectsController(ApplicationDbContext context,
                                   ILogger<ProjectsController> logger,
                                   IBTProjectService bTProjectService,
                                   IBTRolesService bTRolesService,
-                                  UserManager<BTUser> userManager
+                                  UserManager<BTUser> userManager,
+                                  IBTFileService bTFileService,
+                                  IImageService imageService
                                   )
         {
             _context = context;
@@ -38,6 +43,8 @@ namespace Guardian_BugTracker_23.Controllers
             _btProjectService = bTProjectService;
             _btRolesService = bTRolesService;
             _userManager = userManager;
+            _btFileService = bTFileService;
+            _imageService = imageService;
         }
 
         // GET: Projects
@@ -93,7 +100,7 @@ namespace Guardian_BugTracker_23.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,StartDate,EndDate,ProjectPriority,ImageFileName,Archived")] Project project)
+        public async Task<IActionResult> Create([Bind("Name,Description,StartDate,EndDate,ProjectPriority,ImageFileData,ImageFileType,ImageFormFile,Archived")] Project project)
         {
             if (project != null)
             {
@@ -103,6 +110,14 @@ namespace Guardian_BugTracker_23.Controllers
                 {
                     project.CompanyId = _companyId;
                     project.Created = DateTimeOffset.Now;
+
+                    if (project.ImageFormFile != null)
+                    {
+                        // use image service
+                        project.ImageFileData = await _imageService.ConvertFileToByteArrayAsynC(project.ImageFormFile);
+                        project.ImageFileType = project.ImageFormFile.ContentType;
+                    }
+
                     await _btProjectService.AddProjectAsync(project);
                    
                     _logger.LogInformation($"Project was successfully created: {DateTimeOffset.Now: MM dd, yyyy - HH:mm}");
@@ -138,7 +153,7 @@ namespace Guardian_BugTracker_23.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CompanyId,Description,Created,StartDate,EndDate,ProjectPriority,ImageFileData,ImageFileType,Archived")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CompanyId,Description,Created,StartDate,EndDate,ProjectPriority,ImageFileData,ImageFileType,ImageFomeFile,Archived")] Project project)
         {
             if (id != project.Id)
             {
@@ -149,6 +164,12 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 try
                 {
+                    if (project.ImageFormFile != null)
+                    {
+                        // use image service
+                        project.ImageFileData = await _imageService.ConvertFileToByteArrayAsynC(project.ImageFormFile);
+                        project.ImageFileType = project.ImageFormFile.ContentType;
+                    }
                     await _btProjectService.UpdateProjectAsync(project);
                     _logger.LogInformation($"Project was successfully updated: {DateTimeOffset.Now.ToUniversalTime()}");
                     

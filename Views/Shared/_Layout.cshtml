@@ -684,7 +684,7 @@
                                              class="rounded-circle"
                                              alt="avatar">
                                     </figure>
-                                    <span class="ml-2 d-sm-inline d-none">Bony Gidden</span>
+                                    <span class="ml-2 d-sm-inline d-none">@User.Identity!.Name</span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
                                     <div class="text-center py-4">
@@ -771,6 +771,16 @@
                                     <i data-feather="file-text"></i>
                                 </span>
                                 <span>Projects</span>
+                                <span class="badge badge-danger">5</span>
+                            </a>
+                        </li>
+                        @*Tickets*@
+                        <li>
+                            <a asp-controller="Tickets" asp-action="Index">
+                                <span class="nav-link-icon">
+                                    <i data-feather="layers"></i>
+                                </span>
+                                <span>Tickets</span>
                                 <span class="badge badge-danger">5</span>
                             </a>
                         </li>
@@ -1161,15 +1171,15 @@
             <!-- Content body -->
             <div class="content-body">
                 <!-- Content -->
-                <div class="container-fluid">
+                @* <div class="m-5 mt-3 py-2"> *@
 
-                    <div class="m-5 mt-3 py-2">
+                    @RenderBody()
 
-                        @RenderBody()
-
-                    </div>
-                </div>
+                @* </div> *@
                 <!-- ./ Content -->
+            </div>
+             
+            <div>
                 <!-- Footer -->
                 <footer class="content-footer">
                     <div>© 2020 Gogi - <a href="http://laborasyon.com" target="_blank">Laborasyon</a></div>
@@ -1186,7 +1196,7 @@
             <!-- ./ Content body -->
         </div>
         <!-- ./ Content wrapper -->
-    </div>
+    
     <!-- ./ Layout wrapper -->
     <!-- Main scripts -->
     <script src="~/gogi/vendors/bundle.js"></script>
