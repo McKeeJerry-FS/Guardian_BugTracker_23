@@ -172,7 +172,7 @@ namespace Guardian_BugTracker_23.Services
                                                     .Include(t => t.Comments)
 												    .Include(t => t.History)
 												    .AsNoTracking()
-                                                    .FirstOrDefaultAsync(m => m.Id == ticketId && m.Project.CompanyId == companyId);
+                                                    .FirstOrDefaultAsync(m => m.Id == ticketId && m.Project!.CompanyId == companyId);
                     return ticket!;
                 }
                 return null!;

@@ -7,7 +7,7 @@
 
 @{
     BTUser? user = await _userManager.GetUserAsync(User);
-    //Ticket? ticket = _ticketSvc.GetTicketsByUserIdAsync(user!.Id, user.Company.Id);
+    BTUser? companyId = await _userManager.GetUserAsync(User);    //Ticket? ticket = _ticketSvc.GetTicketsByUserIdAsync(user!.Id, user.Company.Id);
 }
 
 <link rel="stylesheet" href="~/gogi/vendors/dataTable/datatables.min.css" type="text/css">
@@ -410,7 +410,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (Project? item in (await _projectService.GetAllProjectsASync()))
+                        @foreach (Project? item in (await _projectService.GetAllProjectsByCompanyIdAsync(user.CompanyId)))
                         {
                             <tr>
                                 <td>

@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Guardian_BugTracker_23.Data;
+using Guardian_BugTracker_23.Data.Enums;
 
 namespace Guardian_BugTracker_23.Areas.Identity.Pages.Account
 {
@@ -30,13 +32,15 @@ namespace Guardian_BugTracker_23.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<BTUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<BTUser> userManager,
             IUserStore<BTUser> userStore,
             SignInManager<BTUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +48,7 @@ namespace Guardian_BugTracker_23.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
 
         /// <summary>
@@ -72,10 +77,20 @@ namespace Guardian_BugTracker_23.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Display(Name = "First Name")]
             public string? FirstName { get; set; }
 
             [Required]
+            [Display(Name = "Last Name")]
             public string? LastName { get; set; }
+
+            [Required]
+            [Display(Name = "Company Name")]
+            public string? CompanyName { get; set; }
+
+            [Required]
+            [Display(Name = "Company Description")]
+            public string? CompanyDescription { get; set; }
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -118,9 +133,20 @@ namespace Guardian_BugTracker_23.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                Company company = new() 
+                { 
+                    Name = Input.CompanyName,
+                    Description = Input.CompanyDescription,
+                };
+
+                await _context.Companies.AddAsync(company);
+                await _context.SaveChangesAsync();
+
                 var user = CreateUser();
+
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
+                user.CompanyId = company.Id;
 
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -130,7 +156,7 @@ namespace Guardian_BugTracker_23.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
+                    await _userManager.AddToRoleAsync(user, nameof(BTRoles.Admin));
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
