@@ -31,7 +31,7 @@ namespace Guardian_BugTracker_23.Models
         }
         public Guid CompanyToken { get; set; }
         public int CompanyId { get; set; }
-        public int? ProjectId { get; set; }
+        public int ProjectId { get; set; }
         [Required]
         public string? InvitorId { get; set; }
         public string? InviteeId { get; set; }

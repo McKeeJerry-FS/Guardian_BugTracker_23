@@ -37,6 +37,7 @@ builder.Services.AddScoped<IBTTicketHistoryService, BTTicketHistoryService>();
 builder.Services.AddScoped<IBTTicketService, BTTicketService>();
 // Possibly removing since builder.Services.AddScoped<IBTFileService, BTFileService>(); will handle images as well
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IBTInviteService, BTInviteService>();
 
 // Email Service Here
 builder.Services.AddScoped<IEmailSender, EmailService>();

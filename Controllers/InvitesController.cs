@@ -7,16 +7,43 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Guardian_BugTracker_23.Data;
 using Guardian_BugTracker_23.Models;
+using Microsoft.AspNetCore.Authorization;
+using Guardian_BugTracker_23.Services;
+using System.ComponentModel.Design;
+using Guardian_BugTracker_23.Services.Interfaces;
+using Guardian_BugTracker_23.Extensions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Guardian_BugTracker_23.Controllers
 {
-    public class InvitesController : Controller
+    [Authorize(Roles = "Admin")]
+    public class InvitesController : BTBaseController
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBTProjectService _projectService;
+        private readonly IDataProtector _protector;
+        private readonly IBTCompanyService _companyService;
+        private readonly IEmailSender _emailService;
+        private readonly UserManager<BTUser> _userManager;
+        IBTInviteService _inviteService;
 
-        public InvitesController(ApplicationDbContext context)
+        public InvitesController(ApplicationDbContext context,
+                                 IBTProjectService projectService,
+                                 IDataProtectionProvider dataProtectionProvider,
+                                 IBTCompanyService companyService,
+                                 IEmailSender emailSender,
+                                 UserManager<BTUser> userManager,
+                                 IBTInviteService inviteService)
         {
             _context = context;
+            _projectService = projectService;
+            _protector = dataProtectionProvider.CreateProtector("");
+            _companyService = companyService;
+            _emailService = emailSender;
+            _userManager = userManager;
+            _inviteService = inviteService;
         }
 
         // GET: Invites
@@ -49,8 +76,9 @@ namespace Guardian_BugTracker_23.Controllers
         }
 
         // GET: Invites/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewData["ProjectId"] = new SelectList(await _projectService.GetAllProjectsByCompanyIdAsync(_companyId), "Id", "Name");
             ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name");
             ViewData["InviteeId"] = new SelectList(_context.BTUsers, "Id", "Id");
             ViewData["InvitorId"] = new SelectList(_context.BTUsers, "Id", "Id");
@@ -65,18 +93,63 @@ namespace Guardian_BugTracker_23.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,InviteDate,JoinDate,CompanyToken,CompanyId,ProjectId,InvitorId,InviteeId,InviteeEmail,InviteeFirstName,InviteeLastName,Message,IsValid")] Invite invite)
         {
+            ModelState.Remove("InvitorId");
+            int companyId = User.Identity!.GetCompanyId();
+
             if (ModelState.IsValid)
             {
-                _context.Add(invite);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    //encrypt code for invite
+                    Guid guid = Guid.NewGuid();
+
+                    string token = _protector.Protect(guid.ToString());
+                    string email = _protector.Protect(invite.InviteeEmail!);
+                    string company = _protector.Protect(companyId.ToString());
+
+                    string? callbackUrl = Url.Action("ProcessInvite", "Invites", new { token, email, company }, protocol: Request.Scheme);
+
+                    string body = $@"{invite.Message} <br />
+                       Please join my Company. <br />
+                       Click the following link to join our team. <br />
+                       <a href=""{callbackUrl}"">COLLABORATE</a>";
+
+                    string? destination = invite.InviteeEmail;
+
+                    Company btCompany = await _companyService.GetCompanyInfoAsync(companyId);
+
+                    string? subject = $" Nova Tracker: {btCompany.Name} Invite";
+
+                    await _emailService.SendEmailAsync(destination!, subject, body);
+
+
+                    // Save invite in the DB
+                    invite.CompanyToken = guid;
+                    invite.CompanyId = companyId;
+                    invite.InviteDate = DateTime.Now;
+                    invite.InvitorId = _userManager.GetUserId(User);
+                    invite.IsValid = true;
+
+                    // Add Invite service method for "AddNewInviteAsync"
+                    await _inviteService.AddNewInviteAsync(invite);
+
+                    return RedirectToAction("Index", "Home");
+
+                    // TODO: Possibly use SWAL message
+
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
             }
-            ViewData["CompanyId"] = new SelectList(_context.Companies, "Id", "Name", invite.CompanyId);
-            ViewData["InviteeId"] = new SelectList(_context.BTUsers, "Id", "Id", invite.InviteeId);
-            ViewData["InvitorId"] = new SelectList(_context.BTUsers, "Id", "Id", invite.InvitorId);
-            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Description", invite.ProjectId);
+
+            ViewData["ProjectId"] = new SelectList(await _projectService.GetAllProjectsByCompanyIdAsync(companyId), "Id", "Name");
             return View(invite);
         }
+
 
         // GET: Invites/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -173,14 +246,45 @@ namespace Guardian_BugTracker_23.Controllers
             {
                 _context.Invites.Remove(invite);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool InviteExists(int id)
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ProcessInvite(string token, string email, string company)
         {
-          return (_context.Invites?.Any(e => e.Id == id)).GetValueOrDefault();
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(company))
+            {
+                return NotFound();
+            }
+
+            Guid companyToken = Guid.Parse(_protector.Unprotect(token));
+            string? inviteeEmail = _protector.Unprotect(email);
+            int companyId = int.Parse(_protector.Unprotect(company));
+
+            try
+            {
+                Invite? invite = await _inviteService.GetInviteAsync(companyToken, inviteeEmail, companyId);
+
+                if (invite != null)
+                {
+                    return View(invite);
+                }
+
+                return NotFound();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+            private bool InviteExists(int id)
+        {
+            return (_context.Invites?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
