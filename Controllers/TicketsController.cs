@@ -52,6 +52,14 @@ namespace Guardian_BugTracker_23.Controllers
             return View(tickets);
         }
 
+        // GET: Tickets
+        public async Task<IActionResult> MyTickets()
+        {
+            
+            List<Ticket> tickets = await _btTicketService.GetTicketsByUserIdAsync(_userId, _companyId);
+            return View(tickets);
+        }
+
         // Get Method completed and working: Dec. 7, 2023
         [HttpGet]
 		[Authorize(Roles = "Admin, ProjectManager")]
@@ -94,14 +102,17 @@ namespace Guardian_BugTracker_23.Controllers
 		[Authorize(Roles = "Admin, ProjectManager")]
 		public async Task<IActionResult> AssignTicketDeveloper(int? id, string? developerId)
         {
+            Ticket? oldTicket = await _btTicketService.GetTicketAsNoTrackingAsync(id, _companyId);
             string? currentUser = _userManager.GetUserId(User);
             // Get Ticket info
             Ticket? ticket = await _btTicketService.GetTicketByIdAsync(id, _companyId);
             // Check if the developer exists
-            if(developerId != null)
+            if (developerId != null && id != null)
             {
                 await _btTicketService.AssignTicketAsync(ticket.Id, developerId);
+                Ticket? newTicket = await _btTicketService.GetTicketAsNoTrackingAsync(id, _companyId);
                 await _btNotificationService.NewDeveloperNotificationAsync(ticket?.Id, developerId, currentUser);
+                await _btTicketHistoryService.AddHistoryAsync(oldTicket, newTicket, developerId);
                 return RedirectToAction(nameof(Details), "Tickets", new { id = ticket?.Id });
             }
 

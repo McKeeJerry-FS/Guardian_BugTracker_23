@@ -1,12 +1,29 @@
 ﻿@using Guardian_BugTracker_23.Models.ViewModels
 @using System.ComponentModel.Design
 @inject IBTProjectService _projectService
+@inject IBTNotificationService _notificationSvc
+@inject IBTTicketService _ticketSvc
+@inject UserManager<BTUser> _userManager
 
 @{
-    
+    BTUser? user = await _userManager.GetUserAsync(User);
+    //Ticket? ticket = _ticketSvc.GetTicketsByUserIdAsync(user!.Id, user.Company.Id);
 }
 
 <link rel="stylesheet" href="~/gogi/vendors/dataTable/datatables.min.css" type="text/css">
+
+<!-- Styles -->
+<style>
+    .amDark {
+        background-color: slategray;
+        color: #fff;
+    }
+
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+    }
+</style>
 
 <div class="content ">
     <div class="page-header d-md-flex justify-content-between">
@@ -27,40 +44,22 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <h6 class="card-title mb-2">Monthly Financial Status</h6>
-                        <div class="d-flex justify-content-between">
-                            <a href="#" class="btn btn-floating">
-                                <i class="ti-reload"></i>
-                            </a>
-                            <div class="dropdown">
-                                <a href="#" data-toggle="dropdown"
-                                   class="btn btn-floating"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <i class="ti-more-alt"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="#">Action</a>
-                                    <a class="dropdown-item" href="#">Another action</a>
-                                    <a class="dropdown-item" href="#">Something else here</a>
-                                </div>
-                            </div>
+                        <div class="card-body amDark" style="height:600px">
+                            <h5>Project: Tickets vs Developers</h5>
+                            
+                            <!-- HTML -->
+                            <div id="chartdiv" class="text-white amDark"></div>
                         </div>
                     </div>
-                    <p class="text-muted mb-4">Check how you're doing financially for current month</p>
-                    <div id="sales"></div>
-                    <div class="text-center mt-3">
-                        <a href="#" class="btn btn-primary">
-                            <i class="ti-download mr-2"></i> Create Report
-                        </a>
-                    </div>
+                    
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
+        @* <div class="col-lg-6">
             <div class="row">
                 <div class="col-md-6">
                     <div class="card">
@@ -144,10 +143,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> *@
     </div>
 
-    <div class="row">
+    @* <div class="row">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
@@ -277,255 +276,41 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> *@
 
+    <!-- New Notifications Container-->
     <div class="row">
-        <div class="col-lg-4 col-md-12">
+        <div class="col-lg-4 col-md-8">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <h6 class="card-title">Reviews</h6>
+                        <h6 class="card-title">Notifications</h6>
                         <a href="#" class="link-1">View All</a>
                     </div>
                     <div class="card-scroll" style="height: 430px">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex px-0 py-4">
-                                <a href="#" class="flex-shrink-0">
-                                    <figure class="avatar mr-3">
-                                        <img src="~/gogi/assets/media/image/user/man_avatar1.jpg"
-                                             class="rounded-circle" alt="image">
-                                    </figure>
-                                </a>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="#">
-                                            <h6>Valentine Maton</h6>
-                                            <ul class="list-inline mb-1">
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">(5)</li>
-                                            </ul>
-                                        </a>
-                                        <div class="ml-auto">
-                                            <div class="dropdown">
-                                                <a href="#" data-toggle="dropdown"
-                                                   class="btn btn-floating"
-                                                   aria-haspopup="true" aria-expanded="false">
-                                                    <i class="ti-more-alt"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item">View</a>
-                                                    <a href="#" class="dropdown-item">Send Message</a>
-                                                </div>
-                                            </div>
+                            @foreach(Notification notification in (await _notificationSvc.GetNotificationsByUserIdAsync(user!.Id))){
+                                <li>
+                                    <div class="card border border-4 border-secondary shadow shadow-sm" style="color:slategray">
+                                        <div class="card-header">
+                                            @notification.Title
+                                            <div class="d-flex justify-content-end align-content-end">@notification.HasBeenViewed</div>
                                         </div>
-                                    </div>
-                                    <p class="mb-0">
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio,
-                                        tempora.
-                                    </p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex px-0 py-4">
-                                <a href="#" class="flex-shrink-0">
-                                    <figure class="avatar mr-3">
-                                        <img src="~/gogi/assets/media/image/user/man_avatar2.jpg"
-                                             class="rounded-circle" alt="image">
-                                    </figure>
-                                </a>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="#">
-                                            <h6>Valentine Maton</h6>
-                                            <ul class="list-inline mb-1">
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star-half-o text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star-o"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">(3.5)</li>
-                                            </ul>
-                                        </a>
-                                        <div class="ml-auto">
-                                            <div class="dropdown">
-                                                <a href="#" data-toggle="dropdown"
-                                                   class="btn btn-floating"
-                                                   aria-haspopup="true" aria-expanded="false">
-                                                    <i class="ti-more-alt"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item">View</a>
-                                                    <a href="#" class="dropdown-item">Send Message</a>
-                                                </div>
-                                            </div>
+                                        <div class="card-body">
+                                            @notification.Message
                                         </div>
-                                    </div>
-                                    <p class="mb-0">
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio,
-                                        tempora.
-                                    </p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex px-0 py-4">
-                                <a href="#" class="flex-shrink-0">
-                                    <figure class="avatar mr-3">
-                                        <img src="~/gogi/assets/media/image/user/man_avatar3.jpg"
-                                             class="rounded-circle" alt="image">
-                                    </figure>
-                                </a>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="#">
-                                            <h6>Valentine Maton</h6>
-                                            <ul class="list-inline mb-1">
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star-half-o text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">(4.5)</li>
-                                            </ul>
-                                        </a>
-                                        <div class="ml-auto">
-                                            <div class="dropdown">
-                                                <a href="#" data-toggle="dropdown"
-                                                   class="btn btn-floating"
-                                                   aria-haspopup="true" aria-expanded="false">
-                                                    <i class="ti-more-alt"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item">View</a>
-                                                    <a href="#" class="dropdown-item">Send Message</a>
-                                                </div>
-                                            </div>
+                                        <div class="card-footer">
+                                            @notification.Created
                                         </div>
-                                    </div>
-                                    <p class="mb-0">
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio,
-                                        tempora.
-                                    </p>
-                                </div>
-                            </li>
-                            <li class="list-group-item d-flex px-0 py-4">
-                                <a href="#" class="flex-shrink-0">
-                                    <figure class="avatar mr-3">
-                                        <img src="~/gogi/assets/media/image/user/man_avatar4.jpg"
-                                             class="rounded-circle" alt="image">
-                                    </figure>
-                                </a>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="#">
-                                            <h6>Valentine Maton</h6>
-                                            <ul class="list-inline mb-1">
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star text-warning"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">
-                                                    <i class="fa fa-star-o"></i>
-                                                </li>
-                                                <li class="list-inline-item mb-0">(4)</li>
-                                            </ul>
-                                        </a>
-                                        <div class="ml-auto">
-                                            <div class="dropdown">
-                                                <a href="#" data-toggle="dropdown"
-                                                   class="btn btn-floating"
-                                                   aria-haspopup="true" aria-expanded="false">
-                                                    <i class="ti-more-alt"></i>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" class="dropdown-item">View</a>
-                                                    <a href="#" class="dropdown-item">Send Message</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <p class="mb-0">
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odio,
-                                        tempora.
-                                    </p>
-                                </div>
-                            </li>
+                                    </div>                       
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="text-center">
-                        <h6 class="card-title mb-4 text-center">Total sales this month</h6>
-                        <h2 class="font-size-35 font-weight-bold text-center">$1.158,000</h2>
-                        <p>
-                            This chart shows total sales. You can use the button below for details of this
-                            month's sales.
-                        </p>
-                        <div class="mt-4">
-                            <a href="#" class="btn btn-primary">View Detail</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card bg-info-bright">
-                <div class="card-body">
-                    <div class="text-center">
-                        <h6 class="card-title mb-4 text-center">Total sales in the past week</h6>
-                        <h2 class="font-size-35 font-weight-bold text-center">$950,000</h2>
-                        <p>
-                            This chart shows total sales. You can use the button below for details of this
-                            month's sales.
-                        </p>
-                        <div class="mt-4">
-                            <a href="#" class="btn btn-primary">View Detail</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
@@ -718,4 +503,86 @@
             });
         });
     </script>
+
+    <!-- *** Begin AM Charts *** -->
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+
+    <!-- Chart code -->
+    <script>
+        $.ajax({
+            type: "POST",
+            url: "/Home/AmCharts",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                am4core.ready(function () {
+
+                    // Themes begin
+                    // Themes end
+
+                    // Create chart instance
+                    var chart = am4core.create("chartdiv", am4charts.XYChart);
+
+
+                    // Add data
+                    chart.data = result;
+
+                    // Create axes
+                    var categoryAxis = chart.yAxes.push(new am4charts.CategoryAxis());
+                    categoryAxis.dataFields.category = "project";
+                    categoryAxis.numberFormatter.numberFormat = "#";
+                    categoryAxis.renderer.inversed = true;
+                    categoryAxis.renderer.grid.template.location = 0;
+                    categoryAxis.renderer.cellStartLocation = 0.1;
+                    categoryAxis.renderer.cellEndLocation = 0.9;
+
+                    var valueAxis = chart.xAxes.push(new am4charts.ValueAxis());
+                    valueAxis.renderer.opposite = true;
+
+                    // Create series
+                    function createSeries(field, name) {
+                        var series = chart.series.push(new am4charts.ColumnSeries());
+                        series.dataFields.valueX = field;
+                        series.dataFields.categoryY = "project";
+                        series.name = name;
+                        series.columns.template.tooltipText = "{name}: [bold]{valueX}[/]";
+                        series.columns.template.height = am4core.percent(100);
+                        series.sequencedInterpolation = true;
+
+                        var valueLabel = series.bullets.push(new am4charts.LabelBullet());
+                        valueLabel.label.text = "{valueX}";
+                        valueLabel.label.horizontalCenter = "left";
+                        valueLabel.label.dx = 10;
+                        valueLabel.label.hideOversized = false;
+                        valueLabel.label.truncate = false;
+
+                        var categoryLabel = series.bullets.push(new am4charts.LabelBullet());
+                        categoryLabel.label.text = "{name}";
+                        categoryLabel.label.horizontalCenter = "right";
+                        categoryLabel.label.dx = -10;
+                        categoryLabel.label.fill = am4core.color("#fff");
+                        categoryLabel.label.hideOversized = false;
+                        categoryLabel.label.truncate = false;
+                    }
+
+                    createSeries("tickets", "Tickets");
+                    createSeries("developers", "Devs");
+
+                }); // end am4core.ready()
+
+
+            },
+            failure: function (result) {
+                alert(result.d);
+            },
+            error: function (result) {
+                alert(result.d);
+            }
+        });
+    </script>
+
+    <!-- *** End AM Charts *** -->
 }

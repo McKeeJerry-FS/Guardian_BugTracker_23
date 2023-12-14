@@ -12,6 +12,7 @@ namespace Guardian_BugTracker_23.Services
     {
 
 		private readonly ApplicationDbContext _context;
+		private readonly ILogger<BTNotificationService> _logger;
 		private readonly IEmailSender _emailService;
 		private readonly IBTRolesService _rolesService;
 		private readonly IBTProjectService _projectService;
@@ -21,13 +22,15 @@ namespace Guardian_BugTracker_23.Services
 									 IEmailSender emailService,
 									 IBTRolesService rolesService,
 									 UserManager<BTUser> userManager,
-									 IBTProjectService projectService)
+									 IBTProjectService projectService,
+									 ILogger<BTNotificationService> logger)
 		{
 			_context = context;
 			_emailService = emailService;
 			_rolesService = rolesService;
 			_userManager = userManager;
 			_projectService = projectService;
+			_logger = logger;
 		}
 
 		public async Task AddNotificationAsync(Notification? notification)
@@ -42,7 +45,7 @@ namespace Guardian_BugTracker_23.Services
 			}
 			catch (Exception)
 			{
-
+				_logger.LogError("Error has occurred while adding a notification.");
 				throw;
 			}
 		}

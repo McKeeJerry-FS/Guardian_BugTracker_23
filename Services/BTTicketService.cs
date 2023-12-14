@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NuGet.ProjectModel;
+using System.Linq;
 
 namespace Guardian_BugTracker_23.Services
 {
@@ -52,8 +53,11 @@ namespace Guardian_BugTracker_23.Services
         {
 			try
 			{
-				_context.Add(ticketAttachment);
-				await _context.SaveChangesAsync();
+                if(ticketAttachment != null)
+                {
+				    await _context.AddAsync(ticketAttachment);
+				    await _context.SaveChangesAsync();
+                }
 			}
 			catch (Exception)
 			{
@@ -159,14 +163,19 @@ namespace Guardian_BugTracker_23.Services
         {
             try
             {
-                return await _context.Tickets.Include(t => t.DeveloperUser)
-                                                .Include(t => t.Project)
-                                                .Include(t => t.SubmitterUser)
-                                                .Include(t => t.Attachments)
-                                                .Include(t => t.Comments)
-												.Include(t => t.History)
-												.AsNoTracking()
-                                                .FirstOrDefaultAsync(m => m.Id == ticketId);
+                if(ticketId != null && companyId != null)
+                {
+                    Ticket? ticket =  await _context.Tickets.Include(t => t.DeveloperUser)
+                                                    .Include(t => t.Project)
+                                                    .Include(t => t.SubmitterUser)
+                                                    .Include(t => t.Attachments)
+                                                    .Include(t => t.Comments)
+												    .Include(t => t.History)
+												    .AsNoTracking()
+                                                    .FirstOrDefaultAsync(m => m.Id == ticketId && m.Project.CompanyId == companyId);
+                    return ticket!;
+                }
+                return null!;
             }
             catch (Exception)
             {
@@ -179,10 +188,14 @@ namespace Guardian_BugTracker_23.Services
         {
 			try
 			{
-				TicketAttachment ticketAttachment = await _context.Attachments
-																  .Include(t => t.BTUser)
-																  .FirstOrDefaultAsync(t => t.Id == ticketAttachmentId);
-				return ticketAttachment;
+                if(ticketAttachmentId != null)
+                {
+				    TicketAttachment? ticketAttachment = await _context.Attachments
+																      .Include(t => t.BTUser)
+																      .FirstOrDefaultAsync(t => t.Id == ticketAttachmentId);
+				    return ticketAttachment;
+                }
+                return null;
 			}
 			catch (Exception)
 			{
@@ -195,15 +208,21 @@ namespace Guardian_BugTracker_23.Services
         {
             try
             {
-                return await _context.Tickets.Include(t => t.DeveloperUser)
-                                                .Include(t => t.Project)
-                                                .Include(t => t.SubmitterUser)
-                                                .Include(t => t.Attachments)
-                                                .Include(t => t.Comments)
-												.Include(t => t.History)
-												.FirstOrDefaultAsync(m => m.Id == ticketId);
+                if(ticketId != null && companyId != null)
+                {
+                    Ticket? ticket =  await _context.Tickets.Include(t => t.DeveloperUser)
+                                                    .Include(t => t.Project)
+                                                    .Include(t => t.SubmitterUser)
+                                                    .Include(t => t.Attachments)
+                                                    .Include(t => t.Comments)
+												    .Include(t => t.History)
+                                                    .ThenInclude(h => h.User)
+												    .FirstOrDefaultAsync(m => m.Id == ticketId && m.Project!.CompanyId == companyId);
+                    return ticket!;
+                }
+                return null!;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 throw;
@@ -230,7 +249,55 @@ namespace Guardian_BugTracker_23.Services
 
         public async Task<List<Ticket>> GetTicketsByUserIdAsync(string? userId, int? companyId)
         {
-			throw new NotImplementedException();
+            
+            try
+            {
+                List<Ticket> tickets = new();
+                if (!string.IsNullOrEmpty(userId) && companyId != null)
+                {
+                    BTUser? btUser = await _context.Users.Include(u => u.Projects).ThenInclude(p => p.Tickets).FirstOrDefaultAsync(u => u.Id == userId);
+                    tickets = (await GetAllTicketsByCompanyIdAsync(companyId))
+                                    .Where(t => !(t.Archived |t.ArchivedByProject ))  // <-- Binary "OR" LINQ Statement
+                                    .ToList();
+                    try
+                    {
+                        if (await _rolesService.IsUserInRoleAsync(btUser, nameof(BTRoles.Admin)))
+                        {
+                            return tickets;
+                        }
+                        else if(await _rolesService.IsUserInRoleAsync(btUser, nameof(BTRoles.Developer)))
+                        {
+                            return tickets.Where(t => t.DeveloperUserId == userId || t.SubmitterUserId == userId).ToList();
+                        }
+                        else if (await _rolesService.IsUserInRoleAsync(btUser, nameof(BTRoles.Submitter)))
+                        {
+                            return tickets.Where(t => t.SubmitterUserId == userId).ToList();
+                        }
+                        else if (await _rolesService.IsUserInRoleAsync(btUser, nameof(BTRoles.ProjectManager)))
+                        {
+                            List<Ticket> projectTickets = (btUser!.Projects.SelectMany(p => p.Tickets).ToList()!)
+                                                                           .Where(t => !(t.Archived | t.ArchivedByProject))
+                                                                           .ToList();
+                            return projectTickets;
+                        }
+                        
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+
+                                    
+                    return tickets;
+                }
+                return tickets;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
 		}
 
         public Task<IEnumerable<TicketStatus>> GetTicketStatusesAsync()

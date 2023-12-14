@@ -212,6 +212,9 @@ namespace Guardian_BugTracker_23.Services
             {
                 var project = await _context.Projects.Where(p => p.Id == projectId)
                                                .Include(p => p.Company)
+                                               .Include(p => p.Tickets)
+                                               .ThenInclude(t => t.History)
+                                               .ThenInclude(h => h.User)
                                                .FirstOrDefaultAsync();
                 
                 return project;
@@ -325,8 +328,10 @@ namespace Guardian_BugTracker_23.Services
             }
         }
 
-        public Task<List<Project>?> GetUserProjectsAsync(string? userId)
+        public async Task<List<Project>?> GetUserProjectsAsync(string? userId)
         {
+
+
             throw new NotImplementedException();
         }
 

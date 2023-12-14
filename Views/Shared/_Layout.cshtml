@@ -29,7 +29,7 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body class="dark rtl">
+<body class="dark scrollable-layout">
     <!-- Preloader -->
     <div class="preloader">
         <div class="preloader-icon"></div>
@@ -337,7 +337,6 @@
                 <div class="header-body">
                     <div class="header-body-left">
                         <ul class="navbar-nav">
-                            @*Search*@
                             <li class="nav-item mr-3">
                                 <div class="header-search-form">
                                     <form>
@@ -357,7 +356,6 @@
                                     </form>
                                 </div>
                             </li>
-                            @*Apps*@
                             <li class="nav-item dropdown d-none d-md-block">
                                 <a href="#" class="nav-link" title="Apps" data-toggle="dropdown">Apps</a>
                                 <div class="dropdown-menu dropdown-menu-big">
@@ -418,12 +416,11 @@
                                     </div>
                                 </div>
                             </li>
-                            @*Create*@
                             <li class="nav-item dropdown d-none d-md-block">
                                 <a href="#" class="nav-link" title="Actions" data-toggle="dropdown">Create</a>
                                 <div class="dropdown-menu">
-                                    <a asp-controller="Projects" asp-action="Create" class="dropdown-item">Add Project</a>
-                                    <a asp-controller="Tickets" asp-action="Create" class="dropdown-item">Add Ticket</a>
+                                    <a asp-action="Create" asp-controller="Projects" class="dropdown-item">Add Project</a>
+                                    <a asp-action="Create" asp-controller="Tickets" class="dropdown-item">Add Ticket</a>
                                     <a href="#" class="dropdown-item">Add Report</a>
                                     <div class="dropdown-divider"></div>
                                     <a href="#" class="dropdown-item">Reports</a>
@@ -693,13 +690,12 @@
                                                  class="rounded-circle" alt="image">
                                         </figure>
                                         <h5 class="text-center">Bony Gidden</h5>
-                                        <div class="mb-3 small text-center text-muted"></div>
+                                        <div class="mb-3 small text-center text-muted">@User.Identity!.Name</div>
                                         <a href="#" class="btn btn-outline-light btn-rounded">Manage Your Account</a>
                                     </div>
                                     <div class="list-group">
                                         <a href="profile.html" class="list-group-item">View Profile</a>
-                                        <a href="http://bifor.laborasyon.com/login" class="list-group-item text-danger"
-                                           data-sidebar-target="#settings">Sign Out!</a>
+                                        <a href="javascript:document.getElementById('logoutForm').submit()" class="list-group-item text-danger">Sign Out!</a>
                                     </div>
                                     <div class="p-4">
                                         <div class="mb-4">
@@ -743,44 +739,40 @@
                         <i class="ti-close"></i>
                     </a>
                 </div>
-                <div class="navigation-menu-body mb-3">
+                <div class="navigation-menu-body">
                     <ul>
-                        @*Dashboard*@
                         <li>
-                            <a class="active" asp-controller="Home" asp-action="Dashboard">
+                            <a class="active" asp-action="Dashboard" asp-controller="Home">
                                 <span class="nav-link-icon">
                                     <i data-feather="pie-chart"></i>
                                 </span>
                                 <span>Dashboard</span>
                             </a>
                         </li>
-                        @*Chat*@
+                        <li>
+                            <a asp-action="Index" asp-controller="Projects">
+                                <span class="nav-link-icon">
+                                    <i data-feather="layers"></i>
+                                </span>
+                                <span>Projects</span>
+                                <span class="badge badge-danger">5</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-action="Index" asp-controller="Tickets">
+                                <span class="nav-link-icon">
+                                    <i data-feather="file-text"></i>
+                                </span>
+                                <span>Tickets</span>
+                                <span class="badge badge-danger">5</span>
+                            </a>
+                        </li>
                         <li>
                             <a href="chat.html">
                                 <span class="nav-link-icon">
                                     <i data-feather="message-circle"></i>
                                 </span>
                                 <span>Chat</span>
-                                <span class="badge badge-danger">5</span>
-                            </a>
-                        </li>
-                        @*Projects*@
-                        <li>
-                            <a asp-controller="Projects" asp-action="Index">
-                                <span class="nav-link-icon">
-                                    <i data-feather="file-text"></i>
-                                </span>
-                                <span>Projects</span>
-                                <span class="badge badge-danger">5</span>
-                            </a>
-                        </li>
-                        @*Tickets*@
-                        <li>
-                            <a asp-controller="Tickets" asp-action="Index">
-                                <span class="nav-link-icon">
-                                    <i data-feather="layers"></i>
-                                </span>
-                                <span>Tickets</span>
                                 <span class="badge badge-danger">5</span>
                             </a>
                         </li>
@@ -1171,15 +1163,8 @@
             <!-- Content body -->
             <div class="content-body">
                 <!-- Content -->
-                @* <div class="m-5 mt-3 py-2"> *@
-
-                    @RenderBody()
-
-                @* </div> *@
+                @RenderBody()
                 <!-- ./ Content -->
-            </div>
-             
-            <div>
                 <!-- Footer -->
                 <footer class="content-footer">
                     <div>© 2020 Gogi - <a href="http://laborasyon.com" target="_blank">Laborasyon</a></div>
@@ -1196,7 +1181,7 @@
             <!-- ./ Content body -->
         </div>
         <!-- ./ Content wrapper -->
-    
+    </div>
     <!-- ./ Layout wrapper -->
     <!-- Main scripts -->
     <script src="~/gogi/vendors/bundle.js"></script>
@@ -1215,7 +1200,7 @@
 
     <!-- App scripts -->
     <script src="~/gogi/assets/js/app.min.js"></script>
-    @await RenderSectionAsync("scripts", required:false)
+    @RenderSectionAsync("scripts", required:false);
 </body>
 </html>
 
