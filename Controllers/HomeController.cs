@@ -55,6 +55,11 @@ namespace Guardian_BugTracker_23.Controllers
 			return View();
 		}
 
+		public IActionResult FileManager()
+		{
+			return View();
+		}
+
 		public IActionResult About()
 		{
 			return View();

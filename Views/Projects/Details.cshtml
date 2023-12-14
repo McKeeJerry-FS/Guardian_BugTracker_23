@@ -173,25 +173,30 @@
                                                 @* Project Activity loop *@
                                                 @foreach(TicketHistory history in Model.Tickets.SelectMany(t => t.History).OrderBy(h => h.Created))
                                                 {
-                                                    <div class="">
-                                                        <span class="date" style="font-weight:bold">@history.Created.ToString("dd MMM yyyy")</span>
-                                                        <h6>@history.Description</h6>
-                                                        <span>By: <a href="" title="@history.User!.FullName">@history.User.FullName</a></span>
-                                                        <div class="">
-                                                            @if(history.Description!.Contains("New Ticket Created"))
-                                                            {
-                                                                <p>A ticket was added</p>
-                                                            }
-                                                            else if (history.PropertyName!.Equals("TicketComment") || history.PropertyName!.Equals("TicketAttachment"))
-                                                            {
-                                                                <p>A <strong>@history.PropertyName</strong> was added.</p>
-                                                            }
-                                                            else
-                                                            {
-                                                                <p>The ticket <strong>@history.PropertyName</strong> was edited</p>
-                                                                <p>@($"Previous: {history.PropertyName}:  ")<span style="color:red">@history.OldValue</span></p>
-                                                                <p>@($"Current: {history.PropertyName}:  ")<span style="color:green">@history.NewValue</span></p>
-                                                            }
+                                                    <div class="card shadow-lg" style="background-color:darkslategray;">
+                                                        <div class="card-header">
+                                                            <span class="date" style="font-weight:bold">@history.Created.ToString("dd MMM yyyy")</span>
+                                                        </div>
+                                                        <div class="card-body">
+
+                                                            <h6>@history.Description</h6>
+                                                            <span>By: <a href="" title="@history.User!.FullName">@history.User.FullName</a></span>
+                                                            <div class="">
+                                                                @if(history.Description!.Contains("New Ticket Created"))
+                                                                {
+                                                                    <p>A ticket was added</p>
+                                                                }
+                                                                else if (history.PropertyName!.Equals("TicketComment") || history.PropertyName!.Equals("TicketAttachment"))
+                                                                {
+                                                                    <p>A <strong>@history.PropertyName</strong> was added.</p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <p>The ticket <strong>@history.PropertyName</strong> was edited</p>
+                                                                    <p>@($"Previous: {history.PropertyName}:  ")<span style="color:red">@history.OldValue</span></p>
+                                                                    <p>@($"Current: {history.PropertyName}:  ")<span style="color:green">@history.NewValue</span></p>
+                                                                }
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 }
