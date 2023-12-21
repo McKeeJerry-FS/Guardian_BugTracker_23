@@ -72,7 +72,7 @@ public class RegisterByInviteModel : PageModel
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         [Display(Name = "Company")]
-        public string Company { get; set; }
+        public string? Company { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -97,7 +97,7 @@ public class RegisterByInviteModel : PageModel
         /// </summary>
         [Required]
         [Display(Name = "First Name")]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
 
         /// <summary>
@@ -106,7 +106,7 @@ public class RegisterByInviteModel : PageModel
         /// </summary>
         [Required]
         [Display(Name = "Last Name")]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -115,7 +115,7 @@ public class RegisterByInviteModel : PageModel
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -125,7 +125,7 @@ public class RegisterByInviteModel : PageModel
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -134,7 +134,7 @@ public class RegisterByInviteModel : PageModel
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
     }
 
 
@@ -147,7 +147,7 @@ public class RegisterByInviteModel : PageModel
         Invite? invite = await _inviteService.GetInviteAsync(id, companyId);
 
         //Load InputModel with the Invite information
-        Input.Email = invite.InviteeEmail!;
+        Input.Email = invite!.InviteeEmail!;
         Input.FirstName = invite.InviteeFirstName!;
         Input.LastName = invite.InviteeLastName!;
         Input.Company = invite.Company!.Name!;
@@ -187,7 +187,7 @@ public class RegisterByInviteModel : PageModel
                     values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                     protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                await _emailSender.SendEmailAsync(Input.Email!, "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl!)}'>clicking here</a>.");
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)

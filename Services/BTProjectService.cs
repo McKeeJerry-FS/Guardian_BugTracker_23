@@ -189,7 +189,8 @@ namespace Guardian_BugTracker_23.Services
             try
             {
                 List<Project> projects = await _context.Projects.Where(p => p.CompanyId == companyId)
-                                        .ToListAsync();
+                                                                .Include(p => p.ProjectPriority)
+                                                                .ToListAsync();
 
                 return projects;
             }

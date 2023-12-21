@@ -16,26 +16,31 @@ namespace Guardian_BugTracker_23.Services
 
         public async Task<bool> AcceptInviteAsync(Guid? token, string? userId)
         {
-            Invite invite = await _context.Invites.FirstOrDefaultAsync(i => i.CompanyToken == token);
-
-            if (invite == null)
+            if(token != null)
             {
-                return false;
-            }
+                Invite invite = await _context.Invites.FirstOrDefaultAsync(i => i.CompanyToken == token);
 
-            try
-            {
-                invite.IsValid = false;
-                invite.InviteeId = userId;
-                await _context.SaveChangesAsync();
+                if (invite == null)
+                {
+                    return false;
+                }
 
-                return true;
-            }
-            catch (Exception)
-            {
 
-                throw;
+                try
+                {
+                    invite.IsValid = false;
+                    invite.InviteeId = userId;
+                    await _context.SaveChangesAsync();
+
+                    return true;
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
             }
+            return false;
         }
 
         public async Task AddNewInviteAsync(Invite? invite)
