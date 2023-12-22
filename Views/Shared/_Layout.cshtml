@@ -782,6 +782,27 @@
                                 <span class="badge badge-danger">@projects.Count()</span>
                             </a>
                         </li>
+                        @* <li>
+                            <a href="#">
+                                <span class="nav-link-icon">
+                                    <i data-feather="menu"></i>
+                                </span>
+                                <span>Projects</span>
+                            </a>
+                            <ul>
+                                <li>
+                                    <span><a asp-action="Index" asp-controller="Projects">Projects</span></a>
+                                    <span class="badge badge-danger">@projects.Count()</span>
+                                </li>
+                                @if(User.IsInRole("Admin") || User.IsInRole("ProjectManager")){
+                                    <li>
+                                        <a asp-action="Create">Add New Project</a>
+                                    </li>
+                                    
+                                }
+                                
+                            </ul>
+                        </li> *@
                         <li>
                             <a asp-action="Index" asp-controller="Tickets">
                                 <span class="nav-link-icon">
@@ -808,7 +829,7 @@
                                 <span>Mail</span>
                             </a>
                         </li> *@
-                        <li>
+                        @* <li>
                             <a asp-action="ToDo" asp-controller="Home">
                                 <span class="nav-link-icon">
                                     <i data-feather="check-square"></i>
@@ -816,7 +837,7 @@
                                 <span>Todo List</span>
                                 <span class="badge badge-warning">2</span>
                             </a>
-                        </li>
+                        </li> *@
                         <li>
                             <a asp-action="FileManager" asp-controller="Home">
                                 <span class="nav-link-icon">
@@ -849,7 +870,7 @@
                                 <span>Invoice</span>
                             </a>
                         </li> *@
-                        <li>
+                        @* <li>
                             <a href="#">
                                 <span class="nav-link-icon">
                                     <i data-feather="shopping-cart"></i>
@@ -867,7 +888,7 @@
                                     <a href="product-detail.html">Product Detail</a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> *@
                         
                     </ul>
                 </div>
