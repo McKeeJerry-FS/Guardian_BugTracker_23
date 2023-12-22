@@ -1,4 +1,14 @@
-﻿<!doctype html>
+﻿@inject IBTProjectService _projectService
+@inject IBTTicketService _ticketService
+@inject IBTNotificationService _notificationSvc
+@inject UserManager<BTUser> _userManager
+@{
+    BTUser? btUser = await _userManager.GetUserAsync(User);
+    IEnumerable<Project> projects = await _projectService.GetAllProjectsByCompanyIdAsync(btUser!.CompanyId);
+    IEnumerable<Ticket> tickets = await _ticketService.GetTicketsByUserIdAsync(btUser.Id, btUser.CompanyId);
+    IEnumerable<Notification> notifications = await _notificationSvc.GetNotificationsByUserIdAsync(btUser.Id);
+}
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -329,7 +339,7 @@
 
                     <div class="header-logo">
                         <a href=index.html>
-                            <img class="logo" src="~/gogi/assets/media/image/logo.png" alt="logo">
+                            <img class="logo" src="~/img/Aurora_navbar.png" alt="logo">
                         </a>
                     </div>
                 </div>
@@ -365,14 +375,14 @@
                                     <div class="p-3">
                                         <div class="row row-xs">
                                             <div class="col-6">
-                                                <a href="chat.html">
+                                                <a asp-action="Index" asp-controller="Notifications">
                                                     <div class="border-radius-1 text-center mb-3">
                                                         <figure class="avatar avatar-lg border-0">
                                                             <span class="avatar-title bg-primary text-white rounded-circle">
                                                                 <i class="width-30 height-30" data-feather="message-circle"></i>
                                                             </span>
                                                         </figure>
-                                                        <div class="mt-2">Chat</div>
+                                                        <div class="mt-2">Notifications</div>
                                                     </div>
                                                 </a>
                                             </div>
@@ -450,11 +460,11 @@
                                 </a>
                             </li>
 
-                            <li class="nav-item dropdown">
+                            @* <li class="nav-item dropdown">
                                 <a href="#" class="nav-link nav-link-notify" title="Chats" data-sidebar-target="#chat-list">
                                     <i data-feather="message-circle"></i>
                                 </a>
-                            </li>
+                            </li> *@
 
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link nav-link-notify" title="Notifications" data-toggle="dropdown">
@@ -463,49 +473,40 @@
                                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
                                     <div class="border-bottom px-4 py-3 text-center d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0">Notifications</h5>
-                                        <small class="opacity-7">2   unread notifications</small>
+                                        <small class="opacity-7">@notifications.Count()   unread notifications</small>
                                     </div>
                                     <div class="dropdown-scroll">
                                         <ul class="list-group list-group-flush">
                                             <li class="px-4 py-2 text-center small text-muted bg-light">Today</li>
-                                            <li class="px-4 py-3 list-group-item">
-                                                <a href="#" class="d-flex align-items-center hide-show-toggler">
-                                                    <div class="flex-shrink-0">
-                                                        <figure class="avatar mr-3">
-                                                            <span class="avatar-title bg-info-bright text-info rounded-circle">
-                                                                <i class="ti-lock"></i>
-                                                            </span>
-                                                        </figure>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                            2 steps verification
-                                                            <i title="Mark as read" data-toggle="tooltip"
-                                                               class="hide-show-toggler-item fa fa-circle-o font-size-11"></i>
-                                                        </p>
-                                                        <span class="text-muted small">20 min ago</span>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li class="px-4 py-3 list-group-item">
-                                                <a href="#" class="d-flex align-items-center hide-show-toggler">
-                                                    <div class="flex-shrink-0">
-                                                        <figure class="avatar mr-3">
-                                                            <span class="avatar-title bg-warning-bright text-warning rounded-circle">
-                                                                <i class="ti-server"></i>
-                                                            </span>
-                                                        </figure>
-                                                    </div>
-                                                    <div class="flex-grow-1">
-                                                        <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                            Storage is running low!
-                                                            <i title="Mark as read" data-toggle="tooltip"
-                                                               class="hide-show-toggler-item fa fa-circle-o font-size-11"></i>
-                                                        </p>
-                                                        <span class="text-muted small">45 sec ago</span>
-                                                    </div>
-                                                </a>
-                                            </li>
+                                            
+                                                @foreach (Notification notification in notifications)
+                                                {
+                                                    if(notification.HasBeenViewed == false)
+                                                    {
+                                                    
+                                                        <li class="px-4 py-3 list-group-item">
+                                                            <a href="#" class="d-flex align-items-center hide-show-toggler">
+                                                                <div class="flex-shrink-0">
+                                                                    <figure class="avatar mr-3">
+                                                                        <span class="avatar-title bg-info-bright text-info rounded-circle">
+                                                                            <i class="ti-lock"></i>
+                                                                        </span>
+                                                                    </figure>
+                                                                </div>
+                                                        
+                                                                    <div class="flex-grow-1">
+                                                                        <p class="mb-0 line-height-20 d-flex justify-content-between">
+                                                                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id">@notification.Title</a>
+                                                                            <i title="Mark as read" data-toggle="tooltip"
+                                                                               class="hide-show-toggler-item fa fa-circle-o font-size-11"></i>
+                                                                        </p>
+                                                                        <span class="text-muted small">20 min ago</span>
+                                                                    </div>
+                                                            </a>
+                                                        </li>
+                                                    }
+                                                }
+                                            
                                             <li class="px-4 py-2 text-center small text-muted bg-light">Old Notifications</li>
                                             <li class="px-4 py-3 list-group-item">
                                                 <a href="#" class="d-flex align-items-center hide-show-toggler">
@@ -576,7 +577,7 @@
                                 </div>
                             </li>
 
-                            <li class="nav-item">
+                            @* <li class="nav-item">
                                 <a href="#" title="Cart" class="nav-link" data-toggle="dropdown">
                                     <i data-feather="shopping-bag"></i>
                                 </a>
@@ -671,7 +672,7 @@
                                         </button>
                                     </div>
                                 </div>
-                            </li>
+                            </li> *@
 
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link" title="Settings" data-sidebar-target="#settings">
@@ -686,7 +687,7 @@
                                              class="rounded-circle"
                                              alt="avatar">
                                     </figure>
-                                    <span class="ml-2 d-sm-inline d-none">@User.Identity!.Name</span>
+                                    <span class="ml-2 d-sm-inline d-none">@btUser.FullName</span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
                                     <div class="text-center py-4">
@@ -695,7 +696,7 @@
                                                  class="rounded-circle" alt="image">
                                         </figure>
                                         <h5 class="text-center">Bony Gidden</h5>
-                                        <div class="mb-3 small text-center text-muted">@User.Identity!.Name</div>
+                                        <div class="mb-3 small text-center text-muted">@btUser.FullName</div>
                                         <a href="#" class="btn btn-outline-light btn-rounded">Manage Your Account</a>
                                     </div>
                                     <div class="list-group">
@@ -754,13 +755,14 @@
                                 <span>Dashboard</span>
                             </a>
                         </li>
+                        @*Projects*@
                         <li>
                             <a asp-action="Index" asp-controller="Projects">
                                 <span class="nav-link-icon">
                                     <i data-feather="layers"></i>
                                 </span>
                                 <span>Projects</span>
-                                <span class="badge badge-danger">5</span>
+                                <span class="badge badge-danger">@projects.Count()</span>
                             </a>
                         </li>
                         <li>
@@ -769,28 +771,28 @@
                                     <i data-feather="file-text"></i>
                                 </span>
                                 <span>Tickets</span>
-                                <span class="badge badge-danger">5</span>
+                                <span class="badge badge-danger">@tickets.Count()</span>
                             </a>
                         </li>
                         <li>
-                            <a href="chat.html">
+                            <a asp-action="Index" asp-controller="Notifications">
                                 <span class="nav-link-icon">
                                     <i data-feather="message-circle"></i>
                                 </span>
-                                <span>Chat</span>
-                                <span class="badge badge-danger">5</span>
+                                <span>Notification</span>                               
+                                <span class="badge badge-danger">@notifications.Count()</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="mail.html">
+                        @* <li>
+                            <a asp-action="Mail" asp-controller="Home">
                                 <span class="nav-link-icon">
                                     <i data-feather="mail"></i>
                                 </span>
                                 <span>Mail</span>
                             </a>
-                        </li>
+                        </li> *@
                         <li>
-                            <a href="todo-list.html">
+                            <a asp-action="ToDo" asp-controller="Home">
                                 <span class="nav-link-icon">
                                     <i data-feather="check-square"></i>
                                 </span>
@@ -807,14 +809,14 @@
                             </a>
                         </li>
                         <li>
-                            <a href="calendar.html">
+                            <a asp-action="Calendar" asp-controller="Home">
                                 <span class="nav-link-icon">
                                     <i data-feather="calendar"></i>
                                 </span>
                                 <span>Calendar</span>
                             </a>
                         </li>
-                        <li>
+                        @* <li>
                             <a href="gallery.html">
                                 <span class="nav-link-icon">
                                     <i data-feather="image"></i>
@@ -829,7 +831,7 @@
                                 </span>
                                 <span>Invoice</span>
                             </a>
-                        </li>
+                        </li> *@
                         <li>
                             <a href="#">
                                 <span class="nav-link-icon">
@@ -861,7 +863,7 @@
                 <!-- ./ Content -->
                 <!-- Footer -->
                 <footer class="content-footer">
-                    <div>© 2020 Gogi - <a href="http://laborasyon.com" target="_blank">Laborasyon</a></div>
+                    <div>© 2023 Aurora Tracking, Inc - Jerry McKee Jr.</div>
                     <div>
                         <nav class="nav">
                             <a href="https://themeforest.net/licenses/standard" class="nav-link">Licenses</a>

@@ -65,6 +65,21 @@ namespace Guardian_BugTracker_23.Controllers
 			return View();
 		}
 
+		public IActionResult Calendar()
+		{
+			return View();
+		}
+
+		public IActionResult ToDo()
+		{
+			return View();
+		}
+
+		public IActionResult Mail()
+		{
+			return View();
+		}
+
 		[HttpPost]
 		public async Task<JsonResult> AmCharts()
 		

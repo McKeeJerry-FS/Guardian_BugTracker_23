@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.ComponentModel.Design;
+using System.Linq;
 
 namespace Guardian_BugTracker_23.Services
 {
@@ -331,8 +333,6 @@ namespace Guardian_BugTracker_23.Services
 
         public async Task<List<Project>?> GetUserProjectsAsync(string? userId)
         {
-
-
             throw new NotImplementedException();
         }
 
