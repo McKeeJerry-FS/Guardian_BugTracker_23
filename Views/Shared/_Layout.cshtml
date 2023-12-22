@@ -430,18 +430,35 @@
                             <li class="nav-item dropdown d-none d-md-block">
                                 <a href="#" class="nav-link" title="Actions" data-toggle="dropdown">Create</a>
                                 <div class="dropdown-menu">
-                                    <a asp-action="Create" asp-controller="Projects" class="dropdown-item">Add Project</a>
-                                    <a asp-action="Create" asp-controller="Tickets" class="dropdown-item">Add Ticket</a>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <a asp-action="Create" asp-controller="Invites" class="dropdown-item">Company Invite</a>
+                                    @if(User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                                    {                                      
+                                        <a asp-action="Create" asp-controller="Projects" class="dropdown-item">Add Project</a>
                                     }
+                                    <a asp-action="Create" asp-controller="Tickets" class="dropdown-item">Add Ticket</a>
+                                    
                                     
                                     <div class="dropdown-divider"></div>
                                     
                                     <a href="#" class="dropdown-item">Members</a>
                                 </div>
                             </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item dropdown d-none d-md-block">
+                                    <a href="#" class="nav-link" title="Actions" data-toggle="dropdown">Admin Area</a>
+                                    <div class="dropdown-menu">
+                                        <a asp-action="Create" asp-controller="Projects" class="dropdown-item">Add Project</a>
+                                        <a asp-action="Create" asp-controller="Tickets" class="dropdown-item">Add Ticket</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a asp-action="Create" asp-controller="Invites" class="dropdown-item">Company Invite</a>
+                                        <a asp-action="ManageUserRoles" asp-controller="Companies" class="dropdown-item">Manage Roles</a>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <a href="#" class="dropdown-item">Members</a>
+                                    </div>
+                                </li>
+                            }
                         </ul>
                     </div>
 

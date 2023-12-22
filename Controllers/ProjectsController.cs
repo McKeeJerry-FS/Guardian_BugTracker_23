@@ -130,6 +130,7 @@ namespace Guardian_BugTracker_23.Controllers
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Projects == null)
@@ -195,6 +196,7 @@ namespace Guardian_BugTracker_23.Controllers
         }
 
         // GET: Projects/Delete/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Projects == null)
@@ -232,6 +234,7 @@ namespace Guardian_BugTracker_23.Controllers
 
 
         // AssignPM Methods
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> AssignPM(int? id)
         {
@@ -286,6 +289,7 @@ namespace Guardian_BugTracker_23.Controllers
 
         //Assign project member Methods
         [HttpGet]
+        [Authorize(Roles = "Admin, ProjectManagers")]
         public async Task<IActionResult> AssignProjectMembers(int? id)
         {
             Project? project = await _btProjectService.GetProjectByIdAsync(id, _companyId);
@@ -403,6 +407,7 @@ namespace Guardian_BugTracker_23.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Restore(int? id)
         {
 			if (id == null || _context.Projects == null)

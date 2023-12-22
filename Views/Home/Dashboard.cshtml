@@ -578,15 +578,15 @@
                                     @Html.DisplayFor(modelItem => item.Company!.Name)
                                 </td>
                                 <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                                    <a asp-action="Edit" asp-controller="Projects" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-action="Details" asp-controller="Projects" asp-route-id="@item.Id">Details</a> |
                                     @if (item.Archived != true)
                                     {
-                                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                        <a asp-action="Delete" asp-controller="Projects" asp-route-id="@item.Id">Delete</a>
                                     }
                                     else
                                     {
-                                        <a asp-action="Restore" asp-route-id="@item.Id">Restore</a>
+                                        <a asp-action="Restore" asp-controller="Projects" asp-route-id="@item.Id">Restore</a>
                                     }
                                 </td>
                             </tr>
@@ -612,11 +612,11 @@
                             </figure>
                         </div>
                     </div>
-                    <h4 class="mb-3 text-center">Get an Upgrade</h4>
+                    <h4 class="mb-3 text-center">Welcome to Aurora Tracking!</h4>
                     <div class="row my-3">
                         <div class="col-md-10 ml-auto mr-auto">
-                            <p class="text-muted">Get additional 500 GB space for your documents and files. Expand your storage and enjoy your business. Change plan for more space.</p>
-                            <button class="btn btn-primary" data-dismiss="modal">Plan Upgrade</button>
+                            <p class="text-muted">Thank you for checking out our new Software Development and Issue Tracking Software. Please feel free to contact us with any suggestions for improvements or features that you would like to see.</p>
+                            <button class="btn btn-primary" data-dismiss="modal">Enter the Program</button>
                         </div>
                     </div>
                     <a href="#" class="align-items-center d-flex link-1 small justify-content-center" data-dismiss="modal">
