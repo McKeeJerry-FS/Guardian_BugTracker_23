@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 
-    <title>Digital Trend HTML Template</title>
+    <title>Aurora Tracking</title>
     <!--
 
     DIGITAL TREND
@@ -49,9 +49,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a href="#about" class="nav-link smoothScroll">Studio</a>
+                        <a asp-area="Identity" asp-page="/Account/Login" class="nav-link smoothScroll">LogIn</a>
                     </li>
-                    <li class="nav-item">
+                    @* <li class="nav-item">
                         <a href="#project" class="nav-link smoothScroll">Our Works</a>
                     </li>
                     <li class="nav-item">
@@ -59,7 +59,7 @@
                     </li>
                     <li class="nav-item">
                         <a href="~/gogi/landing/contact.html" class="nav-link contact">Contact</a>
-                    </li>
+                    </li> *@
                 </ul>
             </div>
         </div>
@@ -103,11 +103,11 @@
                 <div class="col-lg-7 mx-auto col-md-10 col-12">
                     <div class="about-info">
 
-                        <h2 class="mb-4" data-aos="fade-up">the best <strong>Digital Marketing agency</strong> in Rio de Janeiro</h2>
-
+                        <h2 class="mb-4" data-aos="fade-up">a creative solution for your <strong>Software Lifecycle development</strong> tracking needs</h2>
+                        <p>With an easy to navigate interface and real-time data tracking our software will assist in helping your team in building the best software for client's needs'</p>
                         <p class="mb-0" data-aos="fade-up">
-                            Total 5 HTML pages are included in this template from TemplateMo website. Please check 2 <a href="~/gogi/landing/blog.html">blog</a> pages, <a href="project-detail.html">project</a> page, and <a href="contact.html">contact</a> page.
-                            <br><br>You are <strong>allowed</strong> to use this template for commercial or non-commercial purpose. You are NOT allowed to redistribute the template ZIP file on template collection websites.
+                            
+                            
                         </p>
                     </div>
 
@@ -130,85 +130,59 @@
                 <div class="col-lg-12 col-12">
 
                     <h2 class="mb-5 text-center" data-aos="fade-up">
-                        Please take a look through our
-                        <strong>featured Digital Trends</strong>
+                        Some screenshots of the 
+                        <strong>user interface</strong>
                     </h2>
 
                     <div class="owl-carousel owl-theme" id="project-slide">
                         <div class="item project-wrapper" data-aos="fade-up" data-aos-delay="100">
-                            <img src="~/gogi/landing/images/project/project-image01.jpg" class="img-fluid" alt="project image">
+                            <img src="~/img/Aurora_Dashboard.png" class="img-fluid" alt="project image">
 
                             <div class="project-info">
-                                <small>Marketing</small>
+                                <small>Dashboard</small>
 
                                 <h3>
-                                    <a href="project-detail.html">
-                                        <span>Sweet Go Agency</span>
+                                    
+                                        <span>Main Entry point to the program</span>
                                         <i class="fa fa-angle-right project-icon"></i>
-                                    </a>
+                                    
                                 </h3>
                             </div>
                         </div>
 
                         <div class="item project-wrapper" data-aos="fade-up">
-                            <img src="~/gogi/landing/images/project/project-image02.jpg" class="img-fluid" alt="project image">
+                            <img src="~/img/Aurora_projects.png" class="img-fluid" alt="project image">
 
                             <div class="project-info">
-                                <small>Website</small>
+                                <small>Projects Index</small>
 
                                 <h3>
-                                    <a href="project-detail.html">
-                                        <span>Smart Ladies</span>
+                                    
+                                        <span>Real-time listing of current projects</span>
                                         <i class="fa fa-angle-right project-icon"></i>
-                                    </a>
+                                    
                                 </h3>
                             </div>
                         </div>
 
                         <div class="item project-wrapper" data-aos="fade-up">
-                            <img src="~/gogi/landing/images/project/project-image03.jpg" class="img-fluid" alt="project image">
+                            <img src="~/img/Aurora_filemanager.png" class="img-fluid" alt="project image">
 
                             <div class="project-info">
-                                <small>Branding</small>
+                                <small>File Management</small>
 
                                 <h3>
-                                    <a href="project-detail.html">
-                                        <span>Shoes factory</span>
+                                    
+                                        <span>Highly Organized File Management system</span>
                                         <i class="fa fa-angle-right project-icon"></i>
-                                    </a>
+                                    
                                 </h3>
                             </div>
                         </div>
 
-                        <div class="item project-wrapper" data-aos="fade-up">
-                            <img src="~/gogi/landing/images/project/project-image04.jpg" class="img-fluid" alt="project image">
+                        
 
-                            <div class="project-info">
-                                <small>Social Media</small>
-
-                                <h3>
-                                    <a href="project-detail.html">
-                                        <span>Race Bicycle</span>
-                                        <i class="fa fa-angle-right project-icon"></i>
-                                    </a>
-                                </h3>
-                            </div>
-                        </div>
-
-                        <div class="item project-wrapper" data-aos="fade-up">
-                            <img src="~/gogi/landing/images/project/project-image05.jpg" class="img-fluid" alt="project image">
-
-                            <div class="project-info">
-                                <small>Video</small>
-
-                                <h3>
-                                    <a href="project-detail.html">
-                                        <span>Ultimate HealthCare</span>
-                                        <i class="fa fa-angle-right project-icon"></i>
-                                    </a>
-                                </h3>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -218,7 +192,7 @@
 
 
     <!-- TESTIMONIAL -->
-    <section class="testimonial section-padding">
+    @* <section class="testimonial section-padding">
         <div class="container">
             <div class="row">
 
@@ -247,7 +221,7 @@
 
             </div>
         </div>
-    </section>
+    </section> *@
 
 
     <footer class="site-footer">
@@ -255,37 +229,34 @@
             <div class="row">
 
                 <div class="col-lg-5 mx-lg-auto col-md-8 col-10">
-                    <h1 class="text-white" data-aos="fade-up" data-aos-delay="100">We make creative <strong>brands</strong> only.</h1>
+                    <h1 class="text-white" data-aos="fade-up" data-aos-delay="100">Creating software solutions since <strong>2020</strong>.</h1>
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-12" data-aos="fade-up" data-aos-delay="200">
                     <h4 class="my-4">Contact Info</h4>
 
-                    <p class="mb-1">
-                        <i class="fa fa-phone mr-2 footer-icon"></i>
-                        +99 080 070 4224
-                    </p>
+                    
 
                     <p>
                         <a href="#">
                             <i class="fa fa-envelope mr-2 footer-icon"></i>
-                            hello@company.com
+                            jerrymckeejr.dev@gmail.com
                         </a>
                     </p>
                 </div>
 
                 <div class="col-lg-3 col-md-6 col-12" data-aos="fade-up" data-aos-delay="300">
-                    <h4 class="my-4">Our Studio</h4>
+                    <h4 class="my-4">Our Location</h4>
 
                     <p class="mb-1">
                         <i class="fa fa-home mr-2 footer-icon"></i>
-                        Av. Lúcio Costa - Barra da Tijuca, Rio de Janeiro - RJ, Brazil
+                        Tolland, CT
                     </p>
                 </div>
 
                 <div class="col-lg-4 mx-lg-auto text-center col-md-8 col-12" data-aos="fade-up" data-aos-delay="400">
                     <p class="copyright-text">
-                        Copyright &copy; 2020 Your Company
+                        Copyright &copy; 2023 Aurora Tracking
                         <br>
                         <a rel="nofollow noopener" href="https://templatemo.com">Design: TemplateMo</a>
                     </p>
@@ -294,18 +265,17 @@
                 <div class="col-lg-4 mx-lg-auto col-md-6 col-12" data-aos="fade-up" data-aos-delay="500">
 
                     <ul class="footer-link">
-                        <li><a href="#">Stories</a></li>
-                        <li><a href="#">Work with us</a></li>
-                        <li><a href="#">Privacy</a></li>
+                        <li><a href="https://jmj-techdevportfolio.netlify.app/">Portfolio</a></li>
+                        <li><a href="https://github.com/McKeeJerry-FS/Guardian_BugTracker_23">GitHub Repo</a></li>
+                        <li><a href="https://thetechpulse.up.railway.app/">Tech Pulse Blog</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-3 mx-lg-auto col-md-6 col-12" data-aos="fade-up" data-aos-delay="600">
                     <ul class="social-icon">
-                        <li><a href="#" class="fa fa-instagram"></a></li>
-                        <li><a href="#" class="fa fa-twitter"></a></li>
-                        <li><a href="#" class="fa fa-dribbble"></a></li>
-                        <li><a href="#" class="fa fa-behance"></a></li>
+                        <li><a href="https://www.instagram.com/jmj_dotnetdev/" class="fa fa-instagram"></a></li>
+                        <li><a href="https://www.linkedin.com/in/jjerry-mckee-jr/" class="fa fa-linkedin"></a></li>
+                        <li><a href="https://github.com/McKeeJerry-FS" class="fa fa-github"></a></li>
                     </ul>
                 </div>
 
