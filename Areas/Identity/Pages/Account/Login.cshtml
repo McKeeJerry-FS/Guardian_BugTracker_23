@@ -32,30 +32,30 @@
     </div>
     <button id="login-submit" type="submit" class="btn btn-primary btn-block">Sign in</button>
     <hr>
-    <section>
-        <h3>Or use one of the Demo Accounts to log in. </h3>
-        <hr />
-
-        <div class="mb-1 text-center">
-            <form class="" id="account" method="post">
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-8 btn-block">
-                            <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoAdminEmail">Demo Admin</button>
-                            <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoPMEmail">Demo PM</button>
-                            <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoDevEmail">Demo Developer</button>
-                            <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoSubEmail">Demo Submitter</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-    </section>
     <hr>
     <p class="text-muted">Don't have an account?</p>
     <a asp-area="Identity" asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-outline-light btn-sm">Register now!</a>
 </form>
+<section>
+    <h3>Or use one of the Demo Accounts to log in. </h3>
+    <hr />
+
+    <div class="mb-1 text-center">
+        <form class="" id="account" method="post">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-8 btn-block">
+                        <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoAdminEmail">Demo Admin</button>
+                        <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoPMEmail">Demo PM</button>
+                        <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoDevEmail">Demo Developer</button>
+                        <button type="submit" style="width:inherit;height:min-content" class="btn btn-primary p-10 m-2" name="demoEmail" value="DemoSubEmail">Demo Submitter</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</section>
 <!-- ./ form -->
 
 @section Scripts {
