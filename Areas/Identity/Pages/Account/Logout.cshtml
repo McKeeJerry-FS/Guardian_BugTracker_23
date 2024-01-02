@@ -9,9 +9,23 @@
     @{
         if (User.Identity?.IsAuthenticated ?? false)
         {
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" method="post">
-                <button type="submit" class="nav-link btn btn-link text-light fs-3">Click here to Logout</button>
-            </form>
+            <div class="container">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="text-danger display-4 w-100">
+                            Are you sure you want to Logout?
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" method="post">
+                            <button type="submit" class="btn btn-danger text-light fs-3 m-2">Click here to Logout</button>
+                            
+                        </form>
+                        
+                    </div>
+            
+                </div>
+            </div>
         }
         else
         {
