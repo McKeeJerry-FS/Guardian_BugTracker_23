@@ -430,15 +430,15 @@
                             <li class="nav-item dropdown d-none d-md-block">
                                 <a href="#" class="nav-link" title="Actions" data-toggle="dropdown">Create</a>
                                 <div class="dropdown-menu">
-                                    @if(User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
-                                    {                                      
+                                    @if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                                    {
                                         <a asp-action="Create" asp-controller="Projects" class="dropdown-item">Add Project</a>
                                     }
                                     <a asp-action="Create" asp-controller="Tickets" class="dropdown-item">Add Ticket</a>
-                                    
-                                    
+
+
                                     <div class="dropdown-divider"></div>
-                                    
+
                                     <a href="#" class="dropdown-item">Members</a>
                                 </div>
                             </li>
@@ -477,11 +477,7 @@
                                 </a>
                             </li>
 
-                            @* <li class="nav-item dropdown">
-                                <a href="#" class="nav-link nav-link-notify" title="Chats" data-sidebar-target="#chat-list">
-                                    <i data-feather="message-circle"></i>
-                                </a>
-                            </li> *@
+                            
 
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link nav-link-notify" title="Notifications" data-toggle="dropdown">
@@ -495,35 +491,35 @@
                                     <div class="dropdown-scroll">
                                         <ul class="list-group list-group-flush">
                                             <li class="px-4 py-2 text-center small text-muted bg-light">Today</li>
-                                            
-                                                @foreach (Notification notification in notifications)
+
+                                            @foreach (Notification notification in notifications)
+                                            {
+                                                if (notification.HasBeenViewed == false)
                                                 {
-                                                    if(notification.HasBeenViewed == false)
-                                                    {
-                                                    
-                                                        <li class="px-4 py-3 list-group-item">
-                                                            <a href="#" class="d-flex align-items-center hide-show-toggler">
-                                                                <div class="flex-shrink-0">
-                                                                    <figure class="avatar mr-3">
-                                                                        <span class="avatar-title bg-info-bright text-info rounded-circle">
-                                                                            <i class="ti-lock"></i>
-                                                                        </span>
-                                                                    </figure>
-                                                                </div>
-                                                        
-                                                                    <div class="flex-grow-1">
-                                                                        <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                                            <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id">@notification.Title</a>
-                                                                            <i title="Mark as read" data-toggle="tooltip"
-                                                                               class="hide-show-toggler-item fa fa-circle-o font-size-11"></i>
-                                                                        </p>
-                                                                        <span class="text-muted small">20 min ago</span>
-                                                                    </div>
-                                                            </a>
-                                                        </li>
-                                                    }
+
+                                                    <li class="px-4 py-3 list-group-item">
+                                                        <a href="#" class="d-flex align-items-center hide-show-toggler">
+                                                            <div class="flex-shrink-0">
+                                                                <figure class="avatar mr-3">
+                                                                    <span class="avatar-title bg-info-bright text-info rounded-circle">
+                                                                        <i class="ti-lock"></i>
+                                                                    </span>
+                                                                </figure>
+                                                            </div>
+
+                                                            <div class="flex-grow-1">
+                                                                <p class="mb-0 line-height-20 d-flex justify-content-between">
+                                                                    <a asp-action="Details" asp-controller="Notifications" asp-route-id="@notification.Id">@notification.Title</a>
+                                                                    <i title="Mark as read" data-toggle="tooltip"
+                                                                       class="hide-show-toggler-item fa fa-circle-o font-size-11"></i>
+                                                                </p>
+                                                                <span class="text-muted small">20 min ago</span>
+                                                            </div>
+                                                        </a>
+                                                    </li>
                                                 }
-                                            
+                                            }
+
                                             <li class="px-4 py-2 text-center small text-muted bg-light">Old Notifications</li>
                                             <li class="px-4 py-3 list-group-item">
                                                 <a href="#" class="d-flex align-items-center hide-show-toggler">
@@ -594,102 +590,7 @@
                                 </div>
                             </li>
 
-                            @* <li class="nav-item">
-                                <a href="#" title="Cart" class="nav-link" data-toggle="dropdown">
-                                    <i data-feather="shopping-bag"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
-                                    <div class="border-bottom px-4 py-3 text-center d-flex justify-content-between align-items-center">
-                                        <h5 class="mb-0">Cart</h5>
-                                        <small class="opacity-7">4 products</small>
-                                    </div>
-                                    <div class="dropdown-scroll">
-                                        <div class="list-group list-group-flush">
-                                            <a href="#" class="px-4 py-3 list-group-item d-flex">
-                                                <div class="flex-shrink-0">
-                                                    <figure class="avatar mr-3">
-                                                        <img class="rounded" src="~/gogi/assets/media/image/products/product6.png"
-                                                             alt="Canon 4000D 18-55 MM">
-                                                    </figure>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                        Canon 4000D 18-55 MM
-                                                        <i title="Close" data-toggle="tooltip"
-                                                           class="hide-show-toggler-item small ti-close"></i>
-                                                    </p>
-                                                    <span class="text-muted small">X $1,200</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="px-4 py-3 list-group-item d-flex">
-                                                <div class="flex-shrink-0">
-                                                    <figure class="avatar mr-3">
-                                                        <img class="rounded" src="~/gogi/assets/media/image/products/product3.png"
-                                                             alt="pineapple">
-                                                    </figure>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                        Snopy SN-BT96 Pretty
-                                                        <i title="Close" data-toggle="tooltip"
-                                                           class="hide-show-toggler-item small ti-close"></i>
-                                                    </p>
-                                                    <span class="text-muted small">X $250</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="px-4 py-3 list-group-item d-flex">
-                                                <div class="flex-shrink-0">
-                                                    <figure class="avatar mr-3">
-                                                        <img src="~/gogi/assets/media/image/products/product7.png"
-                                                             class="rounded" alt="pineapple">
-                                                    </figure>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                        Lenovo Tab E10 TB-X104F 32GB
-                                                        <i title="Close" data-toggle="tooltip"
-                                                           class="hide-show-toggler-item small ti-close"></i>
-                                                    </p>
-                                                    <span class="text-muted small">X $100</span>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="px-4 py-3 list-group-item d-flex">
-                                                <div class="flex-shrink-0">
-                                                    <figure class="avatar mr-3">
-                                                        <img class="rounded" src="~/gogi/assets/media/image/products/product6.png"
-                                                             alt="Canon 4000D 18-55 MM">
-                                                    </figure>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-0 line-height-20 d-flex justify-content-between">
-                                                        Canon 4000D 18-55 MM
-                                                        <i title="Close" data-toggle="tooltip"
-                                                           class="hide-show-toggler-item small ti-close"></i>
-                                                    </p>
-                                                    <span class="text-muted small">X $1,200</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="px-4 py-3 border-top text-right small">
-                                        <p class="d-flex justify-content-between align-items-center mb-1">
-                                            <span>Sub Total</span>
-                                            <span>$1,650</span>
-                                        </p>
-                                        <p class="d-flex justify-content-between align-items-center mb-1">
-                                            <span>Taxes</span>
-                                            <span>$15</span>
-                                        </p>
-                                        <p class="d-flex justify-content-between align-items-center mb-1 font-weight-bold">
-                                            <span>Total</span>
-                                            <span>$1,665</span>
-                                        </p>
-                                        <button class="btn btn-primary btn-block mt-2">
-                                            Order and Payment <i class="ti-arrow-right ml-2"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </li> *@
+
 
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link" title="Settings" data-sidebar-target="#settings">
@@ -718,7 +619,7 @@
                                     </div>
                                     <div class="list-group">
                                         <a href="profile.html" class="list-group-item">View Profile</a>
-                                        <a href="javascript:document.getElementById('logoutForm').submit()" class="list-group-item text-danger">Sign Out!</a>
+                                        <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post" class="list-group-item text-danger">Sign Out!</a>
                                     </div>
                                     <div class="p-4">
                                         <div class="mb-4">
@@ -782,27 +683,7 @@
                                 <span class="badge badge-danger">@projects.Count()</span>
                             </a>
                         </li>
-                        @* <li>
-                            <a href="#">
-                                <span class="nav-link-icon">
-                                    <i data-feather="menu"></i>
-                                </span>
-                                <span>Projects</span>
-                            </a>
-                            <ul>
-                                <li>
-                                    <span><a asp-action="Index" asp-controller="Projects">Projects</span></a>
-                                    <span class="badge badge-danger">@projects.Count()</span>
-                                </li>
-                                @if(User.IsInRole("Admin") || User.IsInRole("ProjectManager")){
-                                    <li>
-                                        <a asp-action="Create">Add New Project</a>
-                                    </li>
-                                    
-                                }
-                                
-                            </ul>
-                        </li> *@
+
                         <li>
                             <a asp-action="Index" asp-controller="Tickets">
                                 <span class="nav-link-icon">
@@ -817,27 +698,11 @@
                                 <span class="nav-link-icon">
                                     <i data-feather="message-circle"></i>
                                 </span>
-                                <span>Notification</span>                               
+                                <span>Notification</span>
                                 <span class="badge badge-danger">@notifications.Count()</span>
                             </a>
                         </li>
-                        @* <li>
-                            <a asp-action="Mail" asp-controller="Home">
-                                <span class="nav-link-icon">
-                                    <i data-feather="mail"></i>
-                                </span>
-                                <span>Mail</span>
-                            </a>
-                        </li> *@
-                        @* <li>
-                            <a asp-action="ToDo" asp-controller="Home">
-                                <span class="nav-link-icon">
-                                    <i data-feather="check-square"></i>
-                                </span>
-                                <span>Todo List</span>
-                                <span class="badge badge-warning">2</span>
-                            </a>
-                        </li> *@
+
                         <li>
                             <a asp-action="FileManager" asp-controller="Home">
                                 <span class="nav-link-icon">
@@ -854,42 +719,8 @@
                                 <span>Calendar</span>
                             </a>
                         </li>
-                        @* <li>
-                            <a href="gallery.html">
-                                <span class="nav-link-icon">
-                                    <i data-feather="image"></i>
-                                </span>
-                                <span>Gallery</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="invoice.html">
-                                <span class="nav-link-icon">
-                                    <i data-feather="file-text"></i>
-                                </span>
-                                <span>Invoice</span>
-                            </a>
-                        </li> *@
-                        @* <li>
-                            <a href="#">
-                                <span class="nav-link-icon">
-                                    <i data-feather="shopping-cart"></i>
-                                </span>
-                                <span>E-commerce</span>
-                            </a>
-                            <ul>
-                                <li>
-                                    <a href="orders.html">Orders</a>
-                                </li>
-                                <li>
-                                    <a href="products.html">Products</a>
-                                </li>
-                                <li>
-                                    <a href="product-detail.html">Product Detail</a>
-                                </li>
-                            </ul>
-                        </li> *@
-                        
+
+
                     </ul>
                 </div>
             </div>
@@ -934,7 +765,7 @@
 
     <!-- App scripts -->
     <script src="~/gogi/assets/js/app.min.js"></script>
-    @RenderSectionAsync("scripts", required:false);
+    @RenderSectionAsync("scripts", required: false);
 </body>
 </html>
 
