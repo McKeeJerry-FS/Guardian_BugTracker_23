@@ -23,8 +23,8 @@
     <link rel="stylesheet" href="~/gogi/vendors/bundle.css" type="text/css">
 
     <!-- Google font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+@*     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@@500;600;700&display=swap" rel="stylesheet">
+ *@
     <!-- Daterangepicker -->
     <link rel="stylesheet" href="~/gogi/vendors/datepicker/daterangepicker.css" type="text/css">
 
@@ -40,6 +40,7 @@
     <![endif]-->
 </head>
 <body class="dark scrollable-layout">
+    <partial name="_LogoutPartial" />
     <!-- Preloader -->
     <div class="preloader">
         <div class="preloader-icon"></div>
@@ -605,7 +606,7 @@
                                              class="rounded-circle"
                                              alt="avatar">
                                     </figure>
-                                    <span class="ml-2 d-sm-inline d-none">@btUser.FullName</span>
+                                    <span class="ml-2 d-sm-inline d-none">@btUser?.FullName</span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-big">
                                     <div class="text-center py-4">
@@ -614,12 +615,12 @@
                                                  class="rounded-circle" alt="image">
                                         </figure>
                                         <h5 class="text-center">Bony Gidden</h5>
-                                        <div class="mb-3 small text-center text-muted">@btUser.FullName</div>
+                                        <div class="mb-3 small text-center text-muted">@btUser?.FullName</div>
                                         <a href="#" class="btn btn-outline-light btn-rounded">Manage Your Account</a>
                                     </div>
                                     <div class="list-group">
                                         <a href="profile.html" class="list-group-item">View Profile</a>
-                                        <a asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post" class="list-group-item text-danger">Sign Out!</a>
+                                        <a href="javascript:document.getElementById('logoutForm').submit()" method="post" class="list-group-item text-danger">Sign Out!</a>
                                     </div>
                                     <div class="p-4">
                                         <div class="mb-4">
@@ -703,22 +704,22 @@
                             </a>
                         </li>
 
-                        <li>
+                        @* <li>
                             <a asp-action="FileManager" asp-controller="Home">
                                 <span class="nav-link-icon">
                                     <i data-feather="file-plus"></i>
                                 </span>
                                 <span>File Manager</span>
                             </a>
-                        </li>
-                        <li>
+                        </li> *@
+                        @* <li>
                             <a asp-action="Calendar" asp-controller="Home">
                                 <span class="nav-link-icon">
                                     <i data-feather="calendar"></i>
                                 </span>
                                 <span>Calendar</span>
                             </a>
-                        </li>
+                        </li> *@
 
 
                     </ul>
@@ -765,7 +766,7 @@
 
     <!-- App scripts -->
     <script src="~/gogi/assets/js/app.min.js"></script>
-    @RenderSectionAsync("scripts", required: false);
+    @await RenderSectionAsync("scripts", required: false);
 </body>
 </html>
 
